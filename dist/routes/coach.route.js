@@ -9,32 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const stop_controller_1 = require("../controllers/stop.controller");
-const StopRoutes = [
+const coach_controller_1 = require("../controllers/coach.controller");
+const coachRoutes = [
     {
         method: 'POST',
-        path: '/addStop',
+        path: '/addCoach',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
             const detail = req.payload;
-            const stopResponse = yield stop_controller_1.StopOperation.addStop(detail);
-            return stopResponse;
+            const coachResponse = yield coach_controller_1.CoachOperation.addCoach(detail);
+            return coachResponse;
         }),
         options: {
             auth: 'admin',
-        }
+        },
     },
     {
         method: 'GET',
-        path: '/getStop',
+        path: '/trainDetail',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const stop = req.headers.stop;
-            const stopResponse = yield stop_controller_1.StopOperation.getStop(stop);
-            return stopResponse;
+            const detail = req.headers.coach;
+            const coachResponse = yield coach_controller_1.CoachOperation.trainDetail(detail);
+            return coachResponse;
         }),
         options: {
             auth: 'user',
-        }
-    }
+        },
+    },
 ];
-exports.default = StopRoutes;
-//# sourceMappingURL=stop.route.js.map
+exports.default = coachRoutes;
+//# sourceMappingURL=coach.route.js.map

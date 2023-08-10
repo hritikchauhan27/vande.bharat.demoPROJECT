@@ -51,8 +51,11 @@ class UserOperation {
             }
         });
     }
-    static userLogin(email, role, password, device) {
+    static userLogin(email, password, device) {
         return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_model_1.UserModel.findOne({ email: email });
+            const role = user.role;
+            console.log(role);
             const forToken = { email, role };
             try {
                 const user = yield user_model_1.UserModel.findOne({ email });

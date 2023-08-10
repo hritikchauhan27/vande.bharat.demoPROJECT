@@ -13,7 +13,7 @@ const UserRoutes: ServerRoute[] = [
             return responseData;
         },
         options: {
-            auth:false,
+            auth: false,
             validate: {
                 payload: Joi.object({
                     username: Joi.string().min(3).max(30).required(),
@@ -27,15 +27,15 @@ const UserRoutes: ServerRoute[] = [
     {
         method: 'POST',
         path: '/login',
-        handler: async (req,h) => {
-            const { email, role, password } = req.payload as any;
+        handler: async (req, h) => {
+            const { email, password } = req.payload as any;
             const device = req.headers.device;
-            let loginResponse = await UserOperation.userLogin(email, role, password,device);
-            console.log("login response data",loginResponse);
+            let loginResponse = await UserOperation.userLogin(email, password, device);
+            console.log("login response data", loginResponse);
             return loginResponse;
         },
         options: {
-            auth:false,
+            auth: false,
             validate: {
                 payload: Joi.object({
                     email: Joi.string().email().lowercase().required(),
@@ -48,13 +48,13 @@ const UserRoutes: ServerRoute[] = [
     {
         method: 'GET',
         path: '/logout',
-        handler: async (req,h) => {  
+        handler: async (req, h) => {
             const token = req.headers.authorization;
             let logoutResponse = await UserOperation.logout_user(token);
             return logoutResponse;
-        }, 
-        options:{
-            auth:false,
+        },
+        options: {
+            auth: false,
         }
     }
 ];

@@ -9,43 +9,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StopOperation = void 0;
+exports.seatOperation = void 0;
 const models_1 = require("../models");
 const response_1 = require("../core/response");
-class StopOperation {
-    static addStop(detail) {
+class seatOperation {
+    static addSeat(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stop = yield models_1.StopModel.findOne({ stop_name: detail.stop_name });
-                // console.log(train);
-                if (!stop) {
-                    yield models_1.StopModel.create(detail);
-                    return response_1.Response.sendResponse("Stop register successfully", 201, {});
-                }
-                else {
-                    return response_1.Response.sendResponse("Stop already exit", 403, {});
-                }
+                const seatdata = yield models_1.SeatModel.create(detail);
+                return response_1.Response.sendResponse("Seat register successfully", 201, { seatdata });
             }
             catch (error) {
                 console.log(error);
-                return response_1.Response.sendResponse("Server error", 500, {});
+                return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });
     }
-    static getStop(stop) {
+    static getSeat(seat) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(stop);
-                const stopDetail = yield models_1.StopModel.findOne({ stop_name: stop });
-                console.log(stopDetail);
-                return response_1.Response.sendResponse("Stop detail", 201, { stopDetail });
+                const seatdata = yield models_1.SeatModel.findOne({ seatNumber: seat });
+                console.log(seatdata);
+                return response_1.Response.sendResponse("seat detail", 201, { seatdata });
             }
             catch (error) {
                 console.log(error);
-                return response_1.Response.sendResponse("Server error", 500, {});
+                return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });
     }
 }
-exports.StopOperation = StopOperation;
-//# sourceMappingURL=stop.controller.js.map
+exports.seatOperation = seatOperation;
+//# sourceMappingURL=seat.controller.js.map

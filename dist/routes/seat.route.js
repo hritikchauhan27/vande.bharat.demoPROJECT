@@ -9,32 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const stop_controller_1 = require("../controllers/stop.controller");
-const StopRoutes = [
+const seat_controller_1 = require("../controllers/seat.controller");
+const seatRoutes = [
     {
         method: 'POST',
-        path: '/addStop',
+        path: '/addSeat',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
             const detail = req.payload;
-            const stopResponse = yield stop_controller_1.StopOperation.addStop(detail);
-            return stopResponse;
+            const seatResponse = yield seat_controller_1.seatOperation.addSeat(detail);
+            return seatResponse;
         }),
         options: {
-            auth: 'admin',
-        }
+            auth: false,
+        },
     },
     {
         method: 'GET',
-        path: '/getStop',
+        path: '/getSeat',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const stop = req.headers.stop;
-            const stopResponse = yield stop_controller_1.StopOperation.getStop(stop);
-            return stopResponse;
+            const seat = req.headers.seat;
+            const seatResponse = yield seat_controller_1.seatOperation.getSeat(seat);
+            return seatResponse;
         }),
         options: {
-            auth: 'user',
-        }
-    }
+            auth: false,
+        },
+    },
 ];
-exports.default = StopRoutes;
-//# sourceMappingURL=stop.route.js.map
+exports.default = seatRoutes;
+//# sourceMappingURL=seat.route.js.map

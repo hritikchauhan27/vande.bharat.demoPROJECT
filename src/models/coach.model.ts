@@ -16,4 +16,4 @@ interface Coach {
     bookedSeats: { type: Number, required: true },
   });
   
-  export const CoachModel = model<Coach>('coaches', coachSchema);
+export const CoachModel = model<Coach>('coaches', coachSchema);

@@ -39,7 +39,8 @@ const hapi_1 = require("@hapi/hapi");
 const connection_1 = require("./core/connection");
 const dotenv = __importStar(require("dotenv"));
 const index_route_1 = require("./routes/index.route");
-const authUser_1 = __importDefault(require("./middleware/authUser"));
+const authAdmin_1 = __importDefault(require("./middleware/authAdmin"));
+// import pluginU from './middleware/authUser';
 dotenv.config();
 class Init {
     static hapiserver() {
@@ -49,7 +50,8 @@ class Init {
                 host: process.env.HOST,
             });
             yield (0, connection_1.connectToDatabase)();
-            yield server.register(authUser_1.default);
+            yield server.register(authAdmin_1.default);
+            // await server.register(pluginU);
             server.route(index_route_1.routes);
             yield server.start();
             console.log(`Server running on ${server.info.uri}`);

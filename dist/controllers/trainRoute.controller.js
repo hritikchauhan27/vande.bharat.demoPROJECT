@@ -16,8 +16,23 @@ class trainRouteOperation {
     static addTrainRoute(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                // const troute = TrainRouteModel.findOne({detail.})
                 yield models_1.TrainRouteModel.create(detail);
                 return response_1.Response.sendResponse("TrainRoute register successfully", 201, {});
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server Error", 500, {});
+            }
+        });
+    }
+    static getTrainRoute(start, end) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(start, end);
+                const routeData = yield models_1.TrainRouteModel.findOne({ start_point: start, end_point: end });
+                console.log(routeData);
+                return response_1.Response.sendResponse("TrainRoute route detail", 201, { routeData });
             }
             catch (error) {
                 console.log(error);

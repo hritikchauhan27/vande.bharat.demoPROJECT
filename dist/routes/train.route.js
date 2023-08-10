@@ -9,32 +9,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const stop_controller_1 = require("../controllers/stop.controller");
-const StopRoutes = [
+const train_controller_1 = require("../controllers/train.controller");
+const trainRoutes = [
     {
         method: 'POST',
-        path: '/addStop',
+        path: '/addTrain',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
             const detail = req.payload;
-            const stopResponse = yield stop_controller_1.StopOperation.addStop(detail);
-            return stopResponse;
+            const trainResponse = yield train_controller_1.TrainOperation.addTrain(detail);
+            return trainResponse;
         }),
         options: {
             auth: 'admin',
-        }
+        },
     },
     {
         method: 'GET',
-        path: '/getStop',
+        path: '/getTrain',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const stop = req.headers.stop;
-            const stopResponse = yield stop_controller_1.StopOperation.getStop(stop);
-            return stopResponse;
+            const train = req.headers.train;
+            const trainResponse = yield train_controller_1.TrainOperation.getTrain(train);
+            return trainResponse;
         }),
         options: {
             auth: 'user',
-        }
-    }
+        },
+    },
+    {
+        method: 'GET',
+        path: '/getTrainRoute',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const trainNumber = req.headers.train;
+            const trainResponse = yield train_controller_1.TrainOperation.trainRoute(trainNumber);
+            return trainResponse;
+        }),
+        options: {
+            auth: 'admin',
+        },
+    },
 ];
-exports.default = StopRoutes;
-//# sourceMappingURL=stop.route.js.map
+exports.default = trainRoutes;
+//# sourceMappingURL=train.route.js.map

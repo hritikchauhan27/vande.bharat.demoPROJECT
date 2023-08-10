@@ -12,16 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Jwt = require('hapi-auth-jwt2');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY;
-const plugin = {
-    name: 'jwt-authentication',
+const pluginU = {
+    name: 'jwt-authentication-user',
     version: '1.0.0',
     register: function (server, options) {
         return __awaiter(this, void 0, void 0, function* () {
             yield server.register(Jwt);
-            server.auth.strategy('jwt', 'jwt', {
+            server.auth.strategy('user', 'jwt', {
                 key: secretKey,
                 validate: (decoded, request, h) => __awaiter(this, void 0, void 0, function* () {
-                    if (decoded.role == "admin") {
+                    if (decoded.role == "user") {
                         return { isValid: true };
                     }
                     else {
@@ -30,10 +30,10 @@ const plugin = {
                 }),
                 verifyOptions: { algorithms: ['HS256'] },
             });
-            server.auth.default('jwt');
+            server.auth.default('user');
         });
     },
 };
-exports.default = plugin;
+exports.default = pluginU;
 // module.exports = plugin;
 //# sourceMappingURL=authUser.js.map

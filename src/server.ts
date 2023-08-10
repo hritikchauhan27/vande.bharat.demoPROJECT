@@ -3,7 +3,8 @@ import { connectToDatabase } from './core/connection';
 import * as dotenv from 'dotenv';
 import {routes} from './routes/index.route';
 import { Response } from './core/response';
-import plugin from './middleware/authUser';
+import plugin from './middleware/authAdmin';
+// import pluginU from './middleware/authUser';
 
 dotenv.config();
 class Init {
@@ -15,6 +16,7 @@ class Init {
         
         await connectToDatabase();
         await server.register(plugin);
+        // await server.register(pluginU);
         
         server.route(routes);
         await server.start();

@@ -1,22 +1,50 @@
-import { Request, ResponseToolkit } from '@hapi/hapi';
-import { TrainModel } from '../models';
+import { TrainModel, TrainRouteModel } from '../models';
+import { Response } from '../core/response';
 
-export class trainOperatio{
-    static async createTrain(req:Request,h:ResponseToolkit){
-        const detail= req.payload as any;
+export class TrainOperation {
+    static async addTrain(detail) {
         try {
-            const train = await TrainModel.findOne({trainNumber:detail.trainNumber});
+            const train = await TrainModel.findOne({ trainNumber: detail.trainNumber });
             console.log(train);
-            if(!train){
-                await TrainModel.create(detail);
-                return h.response({status:"train register successfully"}).code(201);
+            if (!train) {
+                const train = await TrainModel.create(detail);
+                return Response.sendResponse("train register successfully", 201, { train });
             }
-            else{
-                return h.response({status:"train already exit"}).code(403);
+            else {
+                return Response.sendResponse("train already exit", 403, {});
             }
         } catch (error) {
             console.log(error);
-            return h.response({ status: "Server Error" }).code(500);
+            return Response.sendResponse("Server error", 500, {});
+        }
+    }
+
+    static async trainRoute(trainNumber) {
+        try {
+            const train = await TrainModel.findOne({trainNumber: trainNumber});
+            let routeId = train.routeId;
+            console.log(routeId);
+            
+            const route = await TrainRouteModel.findOne({ _id: routeId });
+            console.log(route);
+            
+            return Response.sendResponse("train is running on route",201,{route});
+        }
+        catch (error) {
+            console.log(error);
+            return Response.sendResponse("Server error", 500, {});
+        }
+    }
+
+    static async getTrain(train){
+        try {
+            const traindata = await TrainModel.findOne({trainNumber: train});
+            console.log(traindata);
+            return Response.sendResponse("train detail",201,{traindata});
+            
+        } catch (error) {
+            console.log(error);
+            return Response.sendResponse("Server error", 500, {});
         }
     }
 }

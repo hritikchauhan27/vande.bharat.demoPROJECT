@@ -20,7 +20,20 @@ const routeRoutes = [
             return routeResponse;
         }),
         options: {
-            auth: 'jwt',
+            auth: 'admin',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/getRoute',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const start = req.headers.start;
+            const end = req.headers.end;
+            const routeResponse = yield trainRoute_controller_1.trainRouteOperation.getTrainRoute(start, end);
+            return routeResponse;
+        }),
+        options: {
+            auth: 'user',
         },
     },
 ];

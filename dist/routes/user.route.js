@@ -41,9 +41,9 @@ const UserRoutes = [
         method: 'POST',
         path: '/login',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const { email, role, password } = req.payload;
+            const { email, password } = req.payload;
             const device = req.headers.device;
-            let loginResponse = yield user_controller_1.UserOperation.userLogin(email, role, password, device);
+            let loginResponse = yield user_controller_1.UserOperation.userLogin(email, password, device);
             console.log("login response data", loginResponse);
             return loginResponse;
         }),

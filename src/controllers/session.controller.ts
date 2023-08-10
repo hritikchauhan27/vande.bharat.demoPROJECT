@@ -1,4 +1,3 @@
-import { Request, ResponseToolkit } from '@hapi/hapi';
 import { SessionModel } from '../models/session.model';
 import { Response } from '../core/response';
 

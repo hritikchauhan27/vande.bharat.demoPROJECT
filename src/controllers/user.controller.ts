@@ -39,8 +39,12 @@ export class UserOperation {
   }
 
 
-  static async userLogin(email, role, password, device) {
-    const forToken = { email, role };
+  static async userLogin(email, password, device) {
+    const user = await UserModel.findOne({email:email});
+    const role  =user.role;
+    console.log(role);
+    
+    const forToken = { email,role };
     try {
       const user = await UserModel.findOne({ email });
       console.log(user);

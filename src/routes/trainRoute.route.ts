@@ -11,7 +11,20 @@ const routeRoutes: ServerRoute[] = [
             return routeResponse;
         },
         options: {
-            auth: 'jwt',
+            auth: 'admin',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/getRoute',
+        handler: async (req, h) => {
+            const start = req.headers.start;
+            const end = req.headers.end;
+            const routeResponse = await trainRouteOperation.getTrainRoute(start,end);
+            return routeResponse;
+        },
+        options: {
+            auth: 'user',
         },
     },
 ];

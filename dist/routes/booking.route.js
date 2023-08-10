@@ -9,32 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const stop_controller_1 = require("../controllers/stop.controller");
-const StopRoutes = [
+const booking_controller_1 = require("../controllers/booking.controller");
+const bookingRoutes = [
     {
         method: 'POST',
-        path: '/addStop',
+        path: '/addBooking',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
             const detail = req.payload;
-            const stopResponse = yield stop_controller_1.StopOperation.addStop(detail);
-            return stopResponse;
-        }),
-        options: {
-            auth: 'admin',
-        }
-    },
-    {
-        method: 'GET',
-        path: '/getStop',
-        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const stop = req.headers.stop;
-            const stopResponse = yield stop_controller_1.StopOperation.getStop(stop);
-            return stopResponse;
+            const bookingResponse = yield booking_controller_1.bookingOperation.addBooking(detail);
+            return bookingResponse;
         }),
         options: {
             auth: 'user',
-        }
-    }
+        },
+    },
+    {
+        method: 'GET',
+        path: '/bookingHistory',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const date = req.headers.date;
+            const bookingResponse = yield booking_controller_1.bookingOperation.bookingHistory(date);
+            return bookingResponse;
+        }),
+        options: {
+            auth: 'user',
+        },
+    },
 ];
-exports.default = StopRoutes;
-//# sourceMappingURL=stop.route.js.map
+exports.default = bookingRoutes;
+//# sourceMappingURL=booking.route.js.map
