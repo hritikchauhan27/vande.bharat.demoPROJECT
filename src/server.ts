@@ -15,9 +15,7 @@ class Init {
         });
         
         await connectToDatabase();
-        await server.register(plugin);
-        // await server.register(pluginU);
-        
+        await server.register(plugin);        
         server.route(routes);
         await server.start();
         console.log(`Server running on ${server.info.uri}`);

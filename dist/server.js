@@ -51,7 +51,6 @@ class Init {
             });
             yield (0, connection_1.connectToDatabase)();
             yield server.register(authAdmin_1.default);
-            // await server.register(pluginU);
             server.route(index_route_1.routes);
             yield server.start();
             console.log(`Server running on ${server.info.uri}`);

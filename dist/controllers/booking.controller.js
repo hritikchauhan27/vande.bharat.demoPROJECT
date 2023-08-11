@@ -17,27 +17,48 @@ class bookingOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const coach = yield models_1.CoachModel.findOne({ _id: detail.coachId });
-                const seatIds = detail.seats.map(seat => seat.seatId);
-                const noOfBookingSeat = seatIds.length;
-                console.log(coach, seatIds);
-                console.log(noOfBookingSeat);
-                if (noOfBookingSeat > 4) {
-                    return response_1.Response.sendResponse("ONly four seats booking at a time", 403, {});
-                }
-                else {
-                    const seatPromises = seatIds.map(seatId => models_1.SeatModel.findOne({ _id: seatId }));
-                    const seats = yield Promise.all(seatPromises);
-                    const allSeatsAvailable = seats.every(seat => !seat.isBooked);
-                    if (allSeatsAvailable) {
-                        const bookingData = yield models_1.BookingModel.create(detail);
-                        const x = coach.bookedSeats + detail.no_of_seats;
-                        yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
-                        const seats = yield models_1.SeatModel.updateMany({ _id: { $in: seatIds }, isBooked: false }, { isBooked: true });
-                        return response_1.Response.sendResponse("booking register successfully", 201, { bookingData });
+                const booking = yield models_1.BookingModel.findOne({
+                    trainId: detail.trainId,
+                    coachId: detail.coachId,
+                    bookingDate: detail.bookingDate
+                });
+                console.log(booking);
+                if (booking) {
+                    const seat = yield models_1.SeatModel.findOne({
+                        seatNumber: detail.seatNumber,
+                        date: detail.bookingDate
+                    });
+                    console.log(seat);
+                    if (seat) {
+                        return response_1.Response.sendResponse(`seat is already booking for the date ${seat.date}`, 403, {});
                     }
                     else {
-                        return response_1.Response.sendResponse("seat is already booked", 400, {});
+                        const bookingData = yield models_1.BookingModel.create(detail);
+                        const seatData = yield models_1.SeatModel.create({
+                            coachId: detail.coachId,
+                            trainId: detail.trainId,
+                            seatNumber: detail.seatNumber,
+                            date: detail.bookingDate,
+                            isBooked: true
+                        });
+                        const x = coach.bookedSeats + detail.no_of_seats;
+                        console.log(seatData, bookingData);
+                        return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
                     }
+                }
+                else {
+                    const bookingData = yield models_1.BookingModel.create(detail);
+                    const seatData = yield models_1.SeatModel.create({
+                        coachId: detail.coachId,
+                        trainId: detail.trainId,
+                        seatNumber: detail.seatNumber,
+                        date: detail.bookingDate,
+                        isBooked: true
+                    });
+                    const x = coach.bookedSeats + detail.no_of_seats;
+                    const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
+                    console.log(seatData, CaochData, bookingData);
+                    return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
                 }
             }
             catch (error) {
@@ -61,4 +82,54 @@ class bookingOperation {
     }
 }
 exports.bookingOperation = bookingOperation;
+// export class bookingOperation {
+//     static async addBooking(detail) {
+//         try {
+//             const coach = await CoachModel.findOne({ _id: detail.coachId });
+//             const seatIds = detail.seats.map(seat => seat.seatId);
+//             const noOfBookingSeat = seatIds.length;
+//             console.log(coach, seatIds);
+//             console.log(noOfBookingSeat);
+//             const booking = await BookingModel.findOne({
+//                 $and: [
+//                   { bookingDate: detail.bookingDate },
+//                   { coachId: detail.coachId },
+//                   { "seats.seatId": detail.seats.seatId }
+//                 ]
+//               });            
+//               console.log(booking);
+//             // console.log(BookingModel);
+//             if (noOfBookingSeat > 4) {
+//                 return Response.sendResponse("ONly four seats booking at a time", 403, {});
+//             }
+//             else {
+//                 // const seatPromises = seatIds.map(seatId => SeatModel.findOne({ _id: seatId }));
+//                 // const seats = await Promise.all(seatPromises);
+//                 // const allSeatsAvailable = seats.every(seat => !seat.isBooked);
+//                 if (!booking) {
+//                     const bookingData = await BookingModel.create(detail);
+//                     const x = coach.bookedSeats + detail.no_of_seats;
+//                     await CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
+//                     const seats = await SeatModel.updateMany({ _id: { $in: seatIds },  isBooked: true });
+//                     return Response.sendResponse("booking register successfully", 201, { bookingData });
+//                 } else {
+//                     return Response.sendResponse("seat is already booked", 400, {});
+//                 }
+//             }
+//         } catch (error) {
+//             console.log(error);
+//             return Response.sendResponse("Server error", 500, {});
+//         }
+//     }
+//     static async bookingHistory(date) {
+//         try {
+//             const booking = await BookingModel.findOne({ bookingDate: date });
+//             console.log(booking);
+//             return Response.sendResponse("Booking History", 201, { booking });
+//         } catch (error) {
+//             console.log(error);
+//             return Response.sendResponse("Server error", 500, {});
+//         }
+//     }
+// }
 //# sourceMappingURL=booking.controller.js.map

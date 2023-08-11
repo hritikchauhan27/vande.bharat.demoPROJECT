@@ -16,9 +16,14 @@ class trainRouteOperation {
     static addTrainRoute(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // const troute = TrainRouteModel.findOne({detail.})
-                yield models_1.TrainRouteModel.create(detail);
-                return response_1.Response.sendResponse("TrainRoute register successfully", 201, {});
+                const route = yield models_1.TrainRouteModel.findOne({ start_point: detail.start_point, end_point: detail.end_point });
+                if (!route) {
+                    yield models_1.TrainRouteModel.create(detail);
+                    return response_1.Response.sendResponse("TrainRoute register successfully", 201, {});
+                }
+                else {
+                    return response_1.Response.sendResponse("route already exist", 403, {});
+                }
             }
             catch (error) {
                 console.log(error);

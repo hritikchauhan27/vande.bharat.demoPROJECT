@@ -6,22 +6,22 @@ interface Booking {
     userId: Schema.Types.ObjectId;
     trainId: Schema.Types.ObjectId;
     coachId: Schema.Types.ObjectId;
-    seats: {
-        seatId: Schema.Types.ObjectId,
-    }[];
+    // seats: {
+    seatNumber: string;
+    // }[];
     no_of_seats:number;
     bookingDate: Date;
 }
 
-const seatsSchema = new Schema({
-    seatId: {type: Schema.Types.ObjectId, ref: 'seats',required:true}
-})
+// const seatsSchema = new Schema({
+    // seatNumber: {type: String,required:true},
+// })
 
 const bookingSchema = new Schema<Booking>({
     userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     trainId: { type: Schema.Types.ObjectId, ref: 'trains', required: true },
     coachId: { type: Schema.Types.ObjectId, ref: 'coaches', required: true },
-    seats: {seatsSchema},
+    seatNumber: {type: String,required:true},
     no_of_seats:{type:Number,required:true},
     bookingDate: { type: Date, required: true },
   });

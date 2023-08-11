@@ -14,7 +14,7 @@ const plugin = {
       key: secretKey,
       validate: async (decoded, request, h) => {        
         const sessionStatus = await SessionModel.findOne({ userId: decoded.userId });
-        console.log(sessionStatus);
+        // console.log(sessionStatus);
         if (!sessionStatus || sessionStatus.status==false) {
           return { isValid: false };
         }
@@ -34,7 +34,7 @@ const plugin = {
       key: secretKey,
       validate: async (decoded, request, h) => {
         const sessionStatus = await SessionModel.findOne({ userId: decoded.userId });
-        console.log(sessionStatus);
+        // console.log(sessionStatus);
         if (!sessionStatus || sessionStatus.status==false) {
           return { isValid: false };
         }
