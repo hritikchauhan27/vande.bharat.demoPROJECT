@@ -16,6 +16,9 @@ class bookingOperation {
     static addBooking(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const seatNumbers = detail.seats.map((seat) => seat.seatNumber);
+                console.log(seatNumbers);
+                let len = seatNumbers.length;
                 const coach = yield models_1.CoachModel.findOne({ _id: detail.coachId });
                 const booking = yield models_1.BookingModel.findOne({
                     trainId: detail.trainId,
@@ -24,40 +27,50 @@ class bookingOperation {
                 });
                 console.log(booking);
                 if (booking) {
-                    const seat = yield models_1.SeatModel.findOne({
-                        seatNumber: detail.seatNumber,
-                        date: detail.bookingDate
-                    });
-                    console.log(seat);
-                    if (seat) {
-                        return response_1.Response.sendResponse(`seat is already booking for the date ${seat.date}`, 403, {});
+                    var isbooked = 0;
+                    for (let i = 0; i < len; i++) {
+                        let seat = yield models_1.SeatModel.findOne({
+                            seatNumber: seatNumbers[i],
+                            date: detail.bookingDate
+                        });
+                        if (seat) {
+                            isbooked++;
+                        }
+                    }
+                    console.log(isbooked);
+                    if (isbooked > 0) {
+                        return response_1.Response.sendResponse(`seat is already booking`, 403, {});
                     }
                     else {
                         const bookingData = yield models_1.BookingModel.create(detail);
-                        const seatData = yield models_1.SeatModel.create({
-                            coachId: detail.coachId,
-                            trainId: detail.trainId,
-                            seatNumber: detail.seatNumber,
-                            date: detail.bookingDate,
-                            isBooked: true
-                        });
+                        for (let i = 0; i < len; i++) {
+                            yield models_1.SeatModel.create({
+                                coachId: detail.coachId,
+                                trainId: detail.trainId,
+                                seatNumber: seatNumbers[i],
+                                date: detail.bookingDate,
+                                isBooked: true
+                            });
+                        }
                         const x = coach.bookedSeats + detail.no_of_seats;
-                        console.log(seatData, bookingData);
+                        console.log(bookingData);
                         return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
                     }
                 }
                 else {
                     const bookingData = yield models_1.BookingModel.create(detail);
-                    const seatData = yield models_1.SeatModel.create({
-                        coachId: detail.coachId,
-                        trainId: detail.trainId,
-                        seatNumber: detail.seatNumber,
-                        date: detail.bookingDate,
-                        isBooked: true
-                    });
+                    for (let i = 0; i < len; i++) {
+                        yield models_1.SeatModel.create({
+                            coachId: detail.coachId,
+                            trainId: detail.trainId,
+                            seatNumber: seatNumbers[i],
+                            date: detail.bookingDate,
+                            isBooked: true
+                        });
+                    }
                     const x = coach.bookedSeats + detail.no_of_seats;
                     const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
-                    console.log(seatData, CaochData, bookingData);
+                    console.log(CaochData, bookingData);
                     return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
                 }
             }
