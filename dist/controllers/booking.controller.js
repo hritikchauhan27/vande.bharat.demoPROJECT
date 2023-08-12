@@ -19,27 +19,49 @@ class bookingOperation {
                 const seatNumbers = detail.seats.map((seat) => seat.seatNumber);
                 console.log(seatNumbers);
                 let len = seatNumbers.length;
-                const coach = yield models_1.CoachModel.findOne({ _id: detail.coachId });
+                const coach = yield models_1.CoachModel.findOne({ _id: detail.coachId, date: detail.bookingDate });
+                console.log(coach);
                 const booking = yield models_1.BookingModel.findOne({
                     trainId: detail.trainId,
                     coachId: detail.coachId,
                     bookingDate: detail.bookingDate
                 });
                 console.log(booking);
-                if (booking) {
-                    var isbooked = 0;
-                    for (let i = 0; i < len; i++) {
-                        let seat = yield models_1.SeatModel.findOne({
-                            seatNumber: seatNumbers[i],
-                            date: detail.bookingDate
-                        });
-                        if (seat) {
-                            isbooked++;
+                console.log(coach.bookedSeats);
+                if (coach.bookedSeats < 10) {
+                    if (booking) {
+                        var booked = 0;
+                        for (let i = 0; i < len; i++) {
+                            let seat = yield models_1.SeatModel.findOne({
+                                seatNumber: seatNumbers[i],
+                                date: detail.bookingDate,
+                                isBooked: true
+                            });
+                            if (seat) {
+                                booked++;
+                            }
                         }
-                    }
-                    console.log(isbooked);
-                    if (isbooked > 0) {
-                        return response_1.Response.sendResponse(`seat is already booking`, 403, {});
+                        console.log(booked);
+                        if (booked > 0 || len > 4) {
+                            return response_1.Response.sendResponse(`Seat is already booking or You are trying to book more than 4 seat at a time`, 403, {});
+                        }
+                        else {
+                            const bookingData = yield models_1.BookingModel.create(detail);
+                            for (let i = 0; i < len; i++) {
+                                yield models_1.SeatModel.create({
+                                    coachId: detail.coachId,
+                                    trainId: detail.trainId,
+                                    seatNumber: seatNumbers[i],
+                                    date: detail.bookingDate,
+                                    isBooked: true
+                                });
+                            }
+                            const x = coach.bookedSeats + detail.no_of_seats;
+                            console.log(x);
+                            const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
+                            console.log(bookingData);
+                            return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
+                        }
                     }
                     else {
                         const bookingData = yield models_1.BookingModel.create(detail);
@@ -53,25 +75,14 @@ class bookingOperation {
                             });
                         }
                         const x = coach.bookedSeats + detail.no_of_seats;
-                        console.log(bookingData);
+                        console.log(x);
+                        const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
+                        console.log(CaochData, bookingData);
                         return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
                     }
                 }
                 else {
-                    const bookingData = yield models_1.BookingModel.create(detail);
-                    for (let i = 0; i < len; i++) {
-                        yield models_1.SeatModel.create({
-                            coachId: detail.coachId,
-                            trainId: detail.trainId,
-                            seatNumber: seatNumbers[i],
-                            date: detail.bookingDate,
-                            isBooked: true
-                        });
-                    }
-                    const x = coach.bookedSeats + detail.no_of_seats;
-                    const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
-                    console.log(CaochData, bookingData);
-                    return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
+                    return response_1.Response.sendResponse("Coach is already booked check another coach for booking", 403, {});
                 }
             }
             catch (error) {

@@ -8,27 +8,32 @@ export class bookingOperation{
             const seatNumbers = detail.seats.map((seat) => seat.seatNumber);
             console.log(seatNumbers);            
             let len = seatNumbers.length;
-            const coach = await CoachModel.findOne({ _id: detail.coachId });
+            const coach = await CoachModel.findOne({ _id: detail.coachId, date:detail.bookingDate});
+            console.log(coach);            
             const booking = await BookingModel.findOne({
                 trainId: detail.trainId,
                 coachId: detail.coachId,
                 bookingDate: detail.bookingDate
             })
             console.log(booking);
+            console.log(coach.bookedSeats);
+            
+            if(coach.bookedSeats<10){
             if(booking){
-                var isbooked=0;
+                var booked=0;
                 for(let i=0;i<len;i++){
                   let seat = await SeatModel.findOne({
                     seatNumber: seatNumbers[i],
-                    date: detail.bookingDate
+                    date: detail.bookingDate,
+                    isBooked:true
                   });
                   if(seat){
-                      isbooked++;
+                      booked++;
                   }
                 }
-                console.log(isbooked);
-                if(isbooked>0){
-                    return Response.sendResponse(`seat is already booking`,403,{});
+                console.log(booked);
+                if(booked>0 || len>4){
+                    return Response.sendResponse(`Seat is already booking or You are trying to book more than 4 seat at a time`,403,{});
                 } else{
                     const bookingData = await BookingModel.create(detail);
                     for(let i=0;i<len;i++){
@@ -41,6 +46,9 @@ export class bookingOperation{
                     });
                     }
                     const x = coach.bookedSeats + detail.no_of_seats;
+                    console.log(x);
+                    
+                    const CaochData = await CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
                     console.log(bookingData);
                     return Response.sendResponse("booking dnoe successfully",201,{bookingData});
                 }
@@ -56,10 +64,15 @@ export class bookingOperation{
                    });
                    }
                     const x = coach.bookedSeats + detail.no_of_seats;
+                    console.log(x);
+                    
                     const CaochData = await CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
                     console.log(CaochData,bookingData);
                     return Response.sendResponse("booking dnoe successfully",201,{bookingData});
             }
+        }else{
+            return Response.sendResponse("Coach is already booked check another coach for booking",403,{});
+        }
         } catch (error) {
             console.log(error);
             return Response.sendResponse("Server error", 500, {});
@@ -79,7 +92,6 @@ export class bookingOperation{
                 }
             }
 }
-
 
 
 

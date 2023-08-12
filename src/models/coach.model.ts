@@ -7,6 +7,7 @@ interface Coach {
     coachNumber: string;
     no_of_seat: number;
     bookedSeats: number;
+    date: Date;
   }
   
   const coachSchema = new Schema<Coach>({
@@ -14,6 +15,7 @@ interface Coach {
     coachNumber: { type: String, required: true },
     no_of_seat: { type: Number, required: true },
     bookedSeats: { type: Number, required: true },
+    date: {type: Date, required:true},
   });
   
 export const CoachModel = model<Coach>('coaches', coachSchema);
