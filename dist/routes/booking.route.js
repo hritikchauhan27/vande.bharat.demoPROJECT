@@ -27,8 +27,20 @@ const bookingRoutes = [
         method: 'GET',
         path: '/bookingHistory',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const date = req.headers.date;
-            const bookingResponse = yield booking_controller_1.bookingOperation.bookingHistory(date);
+            const bookingId = req.query.id;
+            const bookingResponse = yield booking_controller_1.bookingOperation.bookingHistory(bookingId);
+            return bookingResponse;
+        }),
+        options: {
+            auth: 'user',
+        },
+    },
+    {
+        method: 'Delete',
+        path: '/cancelBooking',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const bookingId = req.query.id;
+            const bookingResponse = yield booking_controller_1.bookingOperation.cancelBooking(bookingId);
             return bookingResponse;
         }),
         options: {

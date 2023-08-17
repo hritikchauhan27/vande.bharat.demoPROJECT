@@ -56,6 +56,18 @@ const UserRoutes: ServerRoute[] = [
         options: {
             auth: false,
         }
+    },
+    {
+        method: 'GET',
+        path: '/getUser',
+        handler: async (req, h) => {
+            const token = req.headers.authorization;
+            let Response = await UserOperation.getUser(token);
+            return Response;
+        },
+        options: {
+            auth: "user",
+        }
     }
 ];
 

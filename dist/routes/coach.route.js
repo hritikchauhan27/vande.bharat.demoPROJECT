@@ -27,12 +27,37 @@ const coachRoutes = [
         method: 'GET',
         path: '/trainDetail',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const detail = req.headers.coach;
+            const detail = req.query.coach;
             const coachResponse = yield coach_controller_1.CoachOperation.trainDetail(detail);
             return coachResponse;
         }),
         options: {
             auth: 'user',
+        },
+    },
+    {
+        method: 'DELETE',
+        path: '/deleteCoach',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const coach = req.query.coach;
+            const coachResponse = yield coach_controller_1.CoachOperation.deleteCoach(coach);
+            return coachResponse;
+        }),
+        options: {
+            auth: 'admin',
+        },
+    },
+    {
+        method: 'PUT',
+        path: '/updateCoach',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const coach = req.query.coach;
+            const detail = req.payload;
+            const coachResponse = yield coach_controller_1.CoachOperation.updateCoach(coach, detail);
+            return coachResponse;
+        }),
+        options: {
+            auth: 'admin',
         },
     },
 ];

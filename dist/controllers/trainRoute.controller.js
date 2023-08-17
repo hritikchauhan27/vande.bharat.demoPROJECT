@@ -45,6 +45,48 @@ class trainRouteOperation {
             }
         });
     }
+    static deleteTrainRoute(start, end) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const routedata = yield models_1.TrainRouteModel.findOne({ start_point: start, end_point: end });
+                if (routedata) {
+                    yield models_1.TrainRouteModel.deleteOne({ start_point: start, end_point: end });
+                    return response_1.Response.sendResponse("Trainroute delete successfully", 201, {});
+                }
+                else {
+                    return response_1.Response.sendResponse("route doesn't exist", 403, {});
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
+    static updateRoute(start, end, detail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const routedata = yield models_1.TrainRouteModel.findOne({ start_point: start, end_point: end });
+                if (routedata) {
+                    let data = yield models_1.TrainRouteModel.updateOne({ start_point: start, end_point: end }, {
+                        $set: {
+                            start_point: detail.start_point,
+                            stop_point: detail.stop_point,
+                            end_point: detail.end_point
+                        }
+                    });
+                    return response_1.Response.sendResponse("route updated successfully", 201, { data });
+                }
+                else {
+                    return response_1.Response.sendResponse("route doesn't exist", 403, {});
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
 }
 exports.trainRouteOperation = trainRouteOperation;
 //# sourceMappingURL=trainRoute.controller.js.map

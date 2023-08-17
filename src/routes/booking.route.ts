@@ -18,8 +18,20 @@ const bookingRoutes: ServerRoute[] =[
         method:'GET',
         path:'/bookingHistory',
         handler:async (req, h) => {
-            const date  = req.headers.date;
-            const bookingResponse =await bookingOperation.bookingHistory(date);
+            const bookingId = req.query.id;
+            const bookingResponse =await bookingOperation.bookingHistory(bookingId);
+            return bookingResponse;
+        },
+        options: {
+            auth: 'user',
+        },
+    },
+    {
+        method:'Delete',
+        path:'/cancelBooking',
+        handler:async (req, h) => {
+            const bookingId  = req.query.id;
+            const bookingResponse =await bookingOperation.cancelBooking(bookingId);
             return bookingResponse;
         },
         options: {

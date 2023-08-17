@@ -36,6 +36,7 @@ class TrainOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const train = yield models_1.TrainModel.findOne({ trainNumber: trainNumber });
+                console.log(train);
                 let routeId = train.routeId;
                 console.log(routeId);
                 const route = yield models_1.TrainRouteModel.findOne({ _id: routeId });
@@ -54,6 +55,48 @@ class TrainOperation {
                 const traindata = yield models_1.TrainModel.findOne({ trainNumber: train });
                 console.log(traindata);
                 return response_1.Response.sendResponse("train detail", 201, { traindata });
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
+    static deleteTrain(train) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const traindata = yield models_1.TrainModel.findOne({ trainNumber: train });
+                if (traindata) {
+                    yield models_1.TrainModel.deleteOne({ trainNumber: train });
+                    return response_1.Response.sendResponse("Train Delete successfully", 201, {});
+                }
+                return response_1.Response.sendResponse("train doesn't exist", 403, {});
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
+    static updateTrain(trainNumber, detail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const train = yield models_1.TrainModel.findOne({ trainNumber: detail.trainNumber });
+                if (train) {
+                    const data = yield models_1.TrainModel.updateOne({ trainNumber: trainNumber }, {
+                        $set: {
+                            trainNumber: detail.trainNumber,
+                            routeId: detail.routeId,
+                            destination: detail.destination,
+                            no_of_coaches: detail.no_of_coaches,
+                            date: detail.date
+                        }
+                    });
+                    return response_1.Response.sendResponse("update successfully", 201, { data });
+                }
+                else {
+                    return response_1.Response.sendResponse("train doesn't exist", 403, {});
+                }
             }
             catch (error) {
                 console.log(error);

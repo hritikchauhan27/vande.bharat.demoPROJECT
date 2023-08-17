@@ -27,12 +27,36 @@ const seatRoutes = [
         method: 'GET',
         path: '/getSeat',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const seat = req.headers.seat;
+            const seat = req.query.seat;
             const seatResponse = yield seat_controller_1.seatOperation.getSeat(seat);
             return seatResponse;
         }),
         options: {
             auth: false,
+        },
+    },
+    {
+        method: 'DELETE',
+        path: '/deleteSeat',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const seat = req.query.seat;
+            const seatResponse = yield seat_controller_1.seatOperation.deleteSeat(seat);
+            return seatResponse;
+        }),
+        options: {
+            auth: false,
+        },
+    },
+    {
+        method: 'PATCH',
+        path: '/updateSeat',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const seat = req.payload;
+            const seatResponse = yield seat_controller_1.seatOperation.updateSeat(seat);
+            return seatResponse;
+        }),
+        options: {
+            auth: "admin",
         },
     },
 ];

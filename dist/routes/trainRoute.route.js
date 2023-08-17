@@ -27,13 +27,40 @@ const routeRoutes = [
         method: 'GET',
         path: '/getRoute',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const start = req.headers.start;
-            const end = req.headers.end;
+            const start = req.query.start;
+            const end = req.query.end;
             const routeResponse = yield trainRoute_controller_1.trainRouteOperation.getTrainRoute(start, end);
             return routeResponse;
         }),
         options: {
             auth: 'user',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/deleteRoute',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const start = req.query.start;
+            const end = req.query.end;
+            const routeResponse = yield trainRoute_controller_1.trainRouteOperation.deleteTrainRoute(start, end);
+            return routeResponse;
+        }),
+        options: {
+            auth: 'admin',
+        },
+    },
+    {
+        method: 'PUT',
+        path: '/updateRoute',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const start = req.query.start;
+            const end = req.query.end;
+            const detail = req.payload;
+            const routeResponse = yield trainRoute_controller_1.trainRouteOperation.updateRoute(start, end, detail);
+            return routeResponse;
+        }),
+        options: {
+            auth: 'admin',
         },
     },
 ];

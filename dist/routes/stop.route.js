@@ -27,12 +27,36 @@ const StopRoutes = [
         method: 'GET',
         path: '/getStop',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const stop = req.headers.stop;
+            const stop = req.query.stop;
             const stopResponse = yield stop_controller_1.StopOperation.getStop(stop);
             return stopResponse;
         }),
         options: {
             auth: 'user',
+        }
+    },
+    {
+        method: 'DELETE',
+        path: '/deleteStop',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const stop = req.query.stop;
+            const stopResponse = yield stop_controller_1.StopOperation.deleteStop(stop);
+            return stopResponse;
+        }),
+        options: {
+            auth: 'admin',
+        }
+    },
+    {
+        method: 'PATCH',
+        path: '/updateStop',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const detail = req.payload;
+            const stopResponse = yield stop_controller_1.StopOperation.updateStop(detail);
+            return stopResponse;
+        }),
+        options: {
+            auth: 'admin',
         }
     }
 ];

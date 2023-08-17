@@ -21,7 +21,7 @@ const bookingSchema = new Schema<Booking>({
     userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     trainId: { type: Schema.Types.ObjectId, ref: 'trains', required: true },
     coachId: { type: Schema.Types.ObjectId, ref: 'coaches', required: true },
-    seats: {seatsSchema},
+    seats: [{ type: seatsSchema, required: true }],
     no_of_seats:{type:Number,required:true},
     bookingDate: { type: Date, required: true },
   });

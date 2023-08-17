@@ -18,12 +18,36 @@ const seatRoutes: ServerRoute[]=[
         method:'GET',
         path: '/getSeat',
         handler: async (req,h)=>{
-            const seat =req.headers.seat;
+            const seat =req.query.seat;
             const seatResponse = await seatOperation.getSeat(seat);
             return seatResponse;
         },
         options: {
             auth: false,
+        },
+    },
+    {
+        method:'DELETE',
+        path: '/deleteSeat',
+        handler: async (req,h)=>{
+            const seat =req.query.seat;
+            const seatResponse = await seatOperation.deleteSeat(seat);
+            return seatResponse;
+        },
+        options: {
+            auth: false,
+        },
+    },
+    {
+        method:'PATCH',
+        path: '/updateSeat',
+        handler: async (req,h)=>{
+            const seat =req.payload as any;
+            const seatResponse = await seatOperation.updateSeat(seat);
+            return seatResponse;
+        },
+        options: {
+            auth: "admin",
         },
     },
 ];

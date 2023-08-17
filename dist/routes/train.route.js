@@ -27,7 +27,7 @@ const trainRoutes = [
         method: 'GET',
         path: '/getTrain',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const train = req.headers.train;
+            const train = req.query.train;
             const trainResponse = yield train_controller_1.TrainOperation.getTrain(train);
             return trainResponse;
         }),
@@ -39,8 +39,33 @@ const trainRoutes = [
         method: 'GET',
         path: '/getTrainRoute',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const trainNumber = req.headers.train;
+            const trainNumber = req.query.train;
             const trainResponse = yield train_controller_1.TrainOperation.trainRoute(trainNumber);
+            return trainResponse;
+        }),
+        options: {
+            auth: 'admin',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/deleteTrain',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const trainNumber = req.query.train;
+            const trainResponse = yield train_controller_1.TrainOperation.deleteTrain(trainNumber);
+            return trainResponse;
+        }),
+        options: {
+            auth: 'admin',
+        },
+    },
+    {
+        method: 'PUT',
+        path: '/updateTrain',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const trainNumber = req.query.train;
+            const detail = req.payload;
+            const trainResponse = yield train_controller_1.TrainOperation.updateTrain(trainNumber, detail);
             return trainResponse;
         }),
         options: {

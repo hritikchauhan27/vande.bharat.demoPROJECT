@@ -73,6 +73,51 @@ class CoachOperation {
             }
         });
     }
+    static deleteCoach(coach) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const coachdata = yield models_1.CoachModel.findOne({ coachNumber: coach });
+                console.log(coachdata, 'coach info');
+                if (coachdata) {
+                    const data = yield models_1.CoachModel.deleteOne({ coachNumber: coach });
+                    console.log(data, 'delete info');
+                    return response_1.Response.sendResponse("coach deleted successfully", 201, {});
+                }
+                return response_1.Response.sendResponse("coach doesn't exist", 403, {});
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
+    static updateCoach(coach, detail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const coachdata = yield models_1.CoachModel.findOne({ coachNumber: coach });
+                console.log(coachdata);
+                if (coachdata) {
+                    const data = yield models_1.CoachModel.updateOne({ coachNumber: coach }, {
+                        $set: {
+                            trainId: detail.trainId,
+                            coachNumber: detail.coachNumber,
+                            no_of_seat: detail.no_of_seat,
+                            bookedSeats: detail.bookedSeats,
+                            date: detail.date
+                        }
+                    });
+                    return response_1.Response.sendResponse("update successfully", 201, { data });
+                }
+                else {
+                    return response_1.Response.sendResponse("coach doesn't exist", 403, {});
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
 }
 exports.CoachOperation = CoachOperation;
 //# sourceMappingURL=coach.controller.js.map

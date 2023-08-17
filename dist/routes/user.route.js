@@ -69,6 +69,18 @@ const UserRoutes = [
         options: {
             auth: false,
         }
+    },
+    {
+        method: 'GET',
+        path: '/getUser',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const token = req.headers.authorization;
+            let Response = yield user_controller_1.UserOperation.getUser(token);
+            return Response;
+        }),
+        options: {
+            auth: "user",
+        }
     }
 ];
 exports.default = UserRoutes;

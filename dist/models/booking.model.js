@@ -10,7 +10,7 @@ const bookingSchema = new mongoose_1.Schema({
     userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'users', required: true },
     trainId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'trains', required: true },
     coachId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'coaches', required: true },
-    seats: { seatsSchema },
+    seats: [{ type: seatsSchema, required: true }],
     no_of_seats: { type: Number, required: true },
     bookingDate: { type: Date, required: true },
 });

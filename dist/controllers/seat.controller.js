@@ -38,6 +38,38 @@ class seatOperation {
             }
         });
     }
+    static deleteSeat(seat) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const seatdata = yield models_1.SeatModel.findOne({ seatNumber: seat });
+                if (seatdata) {
+                    yield models_1.SeatModel.deleteOne({ seatNumber: seat });
+                    return response_1.Response.sendResponse("seat delete successfully", 201, {});
+                }
+                return response_1.Response.sendResponse("Seat doesn't exist", 403, {});
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server Error", 500, {});
+            }
+        });
+    }
+    static updateSeat(seat) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const seatnum = yield models_1.SeatModel.findOne({ seatNumber: seat.seatNumber, date: seat.date });
+            if (seatnum) {
+                yield models_1.SeatModel.updateOne({ seatNumber: seat.seatNumber, date: seat.date }, { isBooked: false });
+                return response_1.Response.sendResponse("Seat update successfully", 201, {});
+            }
+            else {
+                return response_1.Response.sendResponse("seat doesn't exit", 403, {});
+            }
+        });
+    }
+    catch(error) {
+        console.log(error);
+        return response_1.Response.sendResponse("Server error", 500, {});
+    }
 }
 exports.seatOperation = seatOperation;
 //# sourceMappingURL=seat.controller.js.map

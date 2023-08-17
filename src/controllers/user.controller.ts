@@ -46,8 +46,6 @@ export class UserOperation {
     
     const forToken = { email,role };
     try {
-      const user = await UserModel.findOne({ email });
-      console.log(user);
       if (user) {
         const userSession = await SessionModel.findOne({ user_id: user._id });
         console.log(userSession);
@@ -103,6 +101,21 @@ export class UserOperation {
         return Response.sendResponse("User not found",404,{});
       }
     } catch (err) {
+      return Response.sendResponse("Server Error",500,{});
+    }
+  }
+
+  static async getUser(token){
+    try {
+      const userToken = await Auth.verify_token(token);
+      const user = await UserModel.findOne({ email: userToken.email });      
+      if(user){
+        return Response.sendResponse("User detail",201,{user});
+      }
+      else{
+        return Response.sendResponse("user doesn't exist",403,{});
+      }
+    } catch (error) {
       return Response.sendResponse("Server Error",500,{});
     }
   }

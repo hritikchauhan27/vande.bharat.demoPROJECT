@@ -58,8 +58,6 @@ class UserOperation {
             console.log(role);
             const forToken = { email, role };
             try {
-                const user = yield user_model_1.UserModel.findOne({ email });
-                console.log(user);
                 if (user) {
                     const userSession = yield session_model_1.SessionModel.findOne({ user_id: user._id });
                     console.log(userSession);
@@ -116,6 +114,23 @@ class UserOperation {
                 }
             }
             catch (err) {
+                return response_1.Response.sendResponse("Server Error", 500, {});
+            }
+        });
+    }
+    static getUser(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userToken = yield decode_1.Auth.verify_token(token);
+                const user = yield user_model_1.UserModel.findOne({ email: userToken.email });
+                if (user) {
+                    return response_1.Response.sendResponse("User detail", 201, { user });
+                }
+                else {
+                    return response_1.Response.sendResponse("user doesn't exist", 403, {});
+                }
+            }
+            catch (error) {
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });

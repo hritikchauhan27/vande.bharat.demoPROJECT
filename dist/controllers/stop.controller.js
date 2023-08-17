@@ -46,6 +46,40 @@ class StopOperation {
             }
         });
     }
+    static deleteStop(stop) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const stopNme = yield models_1.StopModel.findOne({ stop_name: stop });
+                if (stopNme) {
+                    yield models_1.StopModel.deleteOne({ stop_name: stop });
+                    return response_1.Response.sendResponse("Stop delete successfully", 201, {});
+                }
+                else {
+                    return response_1.Response.sendResponse("Stop doesn't exit", 403, {});
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
+    static updateStop(detail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const stopNme = yield models_1.StopModel.findOne({ stop_name: detail.stop });
+            if (stopNme) {
+                yield models_1.StopModel.updateOne({ stop_name: detail.stop }, { stop_name: detail.newStop });
+                return response_1.Response.sendResponse("Stop update successfully", 201, {});
+            }
+            else {
+                return response_1.Response.sendResponse("Stop doesn't exit", 403, {});
+            }
+        });
+    }
+    catch(error) {
+        console.log(error);
+        return response_1.Response.sendResponse("Server error", 500, {});
+    }
 }
 exports.StopOperation = StopOperation;
 //# sourceMappingURL=stop.controller.js.map

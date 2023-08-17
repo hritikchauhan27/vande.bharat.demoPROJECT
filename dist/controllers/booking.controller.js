@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookingOperation = void 0;
 const models_1 = require("../models");
 const response_1 = require("../core/response");
+const response_2 = require("../core/response");
 class bookingOperation {
     static addBooking(detail) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,7 +29,7 @@ class bookingOperation {
                 });
                 console.log(booking);
                 console.log(coach.bookedSeats);
-                if (coach.bookedSeats < 10) {
+                if (coach.bookedSeats < 11) {
                     if (booking) {
                         var booked = 0;
                         for (let i = 0; i < len; i++) {
@@ -45,41 +46,8 @@ class bookingOperation {
                         if (booked > 0 || len > 4) {
                             return response_1.Response.sendResponse(`Seat is already booking or You are trying to book more than 4 seat at a time`, 403, {});
                         }
-                        else {
-                            const bookingData = yield models_1.BookingModel.create(detail);
-                            for (let i = 0; i < len; i++) {
-                                yield models_1.SeatModel.create({
-                                    coachId: detail.coachId,
-                                    trainId: detail.trainId,
-                                    seatNumber: seatNumbers[i],
-                                    date: detail.bookingDate,
-                                    isBooked: true
-                                });
-                            }
-                            const x = coach.bookedSeats + detail.no_of_seats;
-                            console.log(x);
-                            const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
-                            console.log(bookingData);
-                            return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
-                        }
                     }
-                    else {
-                        const bookingData = yield models_1.BookingModel.create(detail);
-                        for (let i = 0; i < len; i++) {
-                            yield models_1.SeatModel.create({
-                                coachId: detail.coachId,
-                                trainId: detail.trainId,
-                                seatNumber: seatNumbers[i],
-                                date: detail.bookingDate,
-                                isBooked: true
-                            });
-                        }
-                        const x = coach.bookedSeats + detail.no_of_seats;
-                        console.log(x);
-                        const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: detail.coachId }, { bookedSeats: x });
-                        console.log(CaochData, bookingData);
-                        return response_1.Response.sendResponse("booking dnoe successfully", 201, { bookingData });
-                    }
+                    return response_2.bookingSeat.bookTheSeat(detail, len, seatNumbers);
                 }
                 else {
                     return response_1.Response.sendResponse("Coach is already booked check another coach for booking", 403, {});
@@ -91,12 +59,48 @@ class bookingOperation {
             }
         });
     }
-    static bookingHistory(date) {
+    static bookingHistory(bookingId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const booking = yield models_1.BookingModel.findOne({ bookingDate: date });
+                const booking = yield models_1.BookingModel.findOne({ _id: bookingId });
                 console.log(booking);
-                return response_1.Response.sendResponse("Booking History", 201, { booking });
+                if (booking) {
+                    return response_1.Response.sendResponse("Booking History", 201, { booking });
+                }
+                else {
+                    return response_1.Response.sendResponse("booking doesn't exist", 403, {});
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return response_1.Response.sendResponse("Server error", 500, {});
+            }
+        });
+    }
+    static cancelBooking(bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const booking = yield models_1.BookingModel.findOne({ _id: bookingId });
+                console.log(booking, "bookind data");
+                const coach = yield models_1.CoachModel.findOne({ _id: booking.coachId });
+                console.log(coach, "------coach data");
+                const seatNumbers = booking.seats.map((seat) => seat.seatNumber);
+                console.log(seatNumbers);
+                let len = seatNumbers.length;
+                for (let i = 0; i < len; i++) {
+                    yield models_1.SeatModel.updateOne({
+                        seatNumber: seatNumbers[i],
+                        date: booking.bookingDate,
+                    }, {
+                        $set: {
+                            isBooked: false
+                        }
+                    });
+                }
+                let x = coach.bookedSeats - booking.no_of_seats;
+                const CaochData = yield models_1.CoachModel.findByIdAndUpdate({ _id: booking.coachId }, { bookedSeats: x });
+                const bookingData = yield models_1.BookingModel.deleteOne({ _id: bookingId });
+                return response_1.Response.sendResponse("booking canceled successfully", 201, { CaochData, bookingData });
             }
             catch (error) {
                 console.log(error);
