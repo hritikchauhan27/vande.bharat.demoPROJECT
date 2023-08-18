@@ -25,16 +25,29 @@ const coachRoutes = [
     },
     {
         method: 'GET',
-        path: '/trainDetail',
+        path: '/getCoach',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const detail = req.query.coach;
-            const coachResponse = yield coach_controller_1.CoachOperation.trainDetail(detail);
+            const coach = req.query.coach;
+            const coachResponse = yield coach_controller_1.CoachOperation.getCoach(coach);
             return coachResponse;
         }),
         options: {
             auth: 'user',
         },
     },
+    // {
+    //     method: 'GET',
+    //     path: '/trainDetail',
+    //     handler: async (req, h) => {
+    //         const coachId = req.query.coach;
+    //         const routeId = req.query.route;
+    //         const coachResponse = await CoachOperation.trainDetail(coachId,routeId);
+    //         return coachResponse;
+    //     },
+    //     options: {
+    //         auth: 'user',
+    //     },
+    // },
     {
         method: 'DELETE',
         path: '/deleteCoach',

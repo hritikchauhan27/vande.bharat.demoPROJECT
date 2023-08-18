@@ -41,7 +41,7 @@ class seatOperation {
     static deleteSeat(seat) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const seatdata = yield models_1.SeatModel.findOne({ seatNumber: seat });
+                const seatdata = yield models_1.SeatModel.findOne({ _id: seat });
                 if (seatdata) {
                     yield models_1.SeatModel.deleteOne({ seatNumber: seat });
                     return response_1.Response.sendResponse("seat delete successfully", 201, {});
@@ -54,11 +54,17 @@ class seatOperation {
             }
         });
     }
-    static updateSeat(seat) {
+    static updateSeat(seat, detail) {
         return __awaiter(this, void 0, void 0, function* () {
-            const seatnum = yield models_1.SeatModel.findOne({ seatNumber: seat.seatNumber, date: seat.date });
+            const seatnum = yield models_1.SeatModel.findOne({ _id: seat });
             if (seatnum) {
-                yield models_1.SeatModel.updateOne({ seatNumber: seat.seatNumber, date: seat.date }, { isBooked: false });
+                yield models_1.SeatModel.updateOne({ _id: seat }, {
+                    $set: {
+                        coachId: detail.coachId,
+                        trainId: detail.trainId,
+                        seatNumber: detail.seatNumber
+                    }
+                });
                 return response_1.Response.sendResponse("Seat update successfully", 201, {});
             }
             else {

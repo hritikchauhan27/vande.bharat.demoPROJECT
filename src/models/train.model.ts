@@ -7,7 +7,6 @@ interface Train{
     routeId: Schema.Types.ObjectId;
     destination: string;
     no_of_coaches:number;
-    date: Date;
 }
 
 const TrainSchema = new Schema<Train>({
@@ -15,7 +14,6 @@ const TrainSchema = new Schema<Train>({
     routeId: {type: Schema.Types.ObjectId,ref:'routes',required:true},
     destination:{type: String,required:true},
     no_of_coaches:{type: Number,required:true},
-    date: {type: Date,required:true},
 })
 
 export const TrainModel = model<Train>('trains',TrainSchema);

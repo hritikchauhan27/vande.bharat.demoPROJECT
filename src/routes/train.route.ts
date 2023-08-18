@@ -19,7 +19,7 @@ const trainRoutes: ServerRoute[] = [
         path: '/getTrain',
         handler: async (req, h) => {
             const train = req.query.train;
-            const  trainResponse = await TrainOperation.getTrain(train);
+             const  trainResponse = await TrainOperation.getTrain(train);
             return trainResponse;
         },
         options: {
@@ -35,7 +35,7 @@ const trainRoutes: ServerRoute[] = [
             return trainResponse;
         },
         options: {
-            auth: 'admin',
+            auth: 'user',
         },
     },
     {

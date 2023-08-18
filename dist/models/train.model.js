@@ -8,7 +8,6 @@ const TrainSchema = new mongoose_1.Schema({
     routeId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'routes', required: true },
     destination: { type: String, required: true },
     no_of_coaches: { type: Number, required: true },
-    date: { type: Date, required: true },
 });
 exports.TrainModel = (0, mongoose_1.model)('trains', TrainSchema);
 //# sourceMappingURL=train.model.js.map

@@ -14,7 +14,7 @@ export class seatOperation {
 
     static async getSeat(seat) {
         try {
-            const seatdata = await SeatModel.findOne({ seatNumber: seat })
+            const seatdata = await SeatModel.findOne({ seatNumber: seat})
             console.log(seatdata);
             return Response.sendResponse("seat detail", 201, { seatdata })
 
@@ -26,7 +26,7 @@ export class seatOperation {
 
     static async deleteSeat(seat){
         try {
-            const seatdata = await SeatModel.findOne({ seatNumber: seat })
+            const seatdata = await SeatModel.findOne({_id: seat })
             if(seatdata){
                 await SeatModel.deleteOne({ seatNumber: seat });
                 return Response.sendResponse("seat delete successfully",201,{})
@@ -38,10 +38,16 @@ export class seatOperation {
         }
     }
 
-    static async updateSeat(seat){
-        const seatnum = await SeatModel.findOne({seatNumber:seat.seatNumber, date:seat.date}); 
+    static async updateSeat(seat,detail){
+        const seatnum = await SeatModel.findOne({_id:seat}); 
         if(seatnum){
-            await SeatModel.updateOne({seatNumber:seat.seatNumber, date:seat.date},{isBooked: false});
+            await SeatModel.updateOne({_id:seat},{
+                $set:{
+                    coachId:detail.coachId,
+                    trainId:detail.trainId,
+                    seatNumber:detail.seatNumber
+                }
+            });
             return Response.sendResponse("Seat update successfully",201,{});
         }
         else{

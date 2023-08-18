@@ -9,7 +9,6 @@ interface Booking {
     seats: {
         seatNumber: string;
     }[];
-    no_of_seats:number;
     bookingDate: Date;
 }
 
@@ -22,7 +21,6 @@ const bookingSchema = new Schema<Booking>({
     trainId: { type: Schema.Types.ObjectId, ref: 'trains', required: true },
     coachId: { type: Schema.Types.ObjectId, ref: 'coaches', required: true },
     seats: [{ type: seatsSchema, required: true }],
-    no_of_seats:{type:Number,required:true},
     bookingDate: { type: Date, required: true },
   });
   

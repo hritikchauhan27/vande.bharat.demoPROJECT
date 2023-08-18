@@ -66,7 +66,7 @@ const UserRoutes: ServerRoute[] = [
             return Response;
         },
         options: {
-            auth: "user",
+            auth: false,
         }
     }
 ];

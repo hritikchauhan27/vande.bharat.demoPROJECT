@@ -11,7 +11,6 @@ const bookingSchema = new mongoose_1.Schema({
     trainId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'trains', required: true },
     coachId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'coaches', required: true },
     seats: [{ type: seatsSchema, required: true }],
-    no_of_seats: { type: Number, required: true },
     bookingDate: { type: Date, required: true },
 });
 exports.BookingModel = (0, mongoose_1.model)('booking', bookingSchema);

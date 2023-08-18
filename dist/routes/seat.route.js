@@ -20,7 +20,7 @@ const seatRoutes = [
             return seatResponse;
         }),
         options: {
-            auth: false,
+            auth: "admin",
         },
     },
     {
@@ -32,7 +32,7 @@ const seatRoutes = [
             return seatResponse;
         }),
         options: {
-            auth: false,
+            auth: "user",
         },
     },
     {
@@ -44,15 +44,16 @@ const seatRoutes = [
             return seatResponse;
         }),
         options: {
-            auth: false,
+            auth: "admin",
         },
     },
     {
         method: 'PATCH',
         path: '/updateSeat',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
-            const seat = req.payload;
-            const seatResponse = yield seat_controller_1.seatOperation.updateSeat(seat);
+            const seat = req.query.id;
+            const detail = req.payload;
+            const seatResponse = yield seat_controller_1.seatOperation.updateSeat(seat, detail);
             return seatResponse;
         }),
         options: {

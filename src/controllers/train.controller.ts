@@ -5,7 +5,7 @@ import { log } from 'console';
 export class TrainOperation {
     static async addTrain(detail) {
         try {
-            const train = await TrainModel.findOne({ trainNumber: detail.trainNumber });
+            const train = await TrainModel.findOne({ trainNumber: detail.trainNumber});
             console.log(train);
             if (!train) {
                 const train = await TrainModel.create(detail);
@@ -40,7 +40,27 @@ export class TrainOperation {
 
     static async getTrain(train) {
         try {
-            const traindata = await TrainModel.findOne({ trainNumber: train });
+            const traindata = await TrainModel.aggregate([
+                {
+                    $match:{trainNumber:{$eq:train}}
+                },
+                {
+                    $lookup:{
+                        from:'coaches',
+                        localField:"_id",
+                        foreignField:"trainId",
+                        as:"Coaches"
+                    }
+                },
+                {
+                    $lookup:{
+                        from:"trainroutes",
+                        localField:"routeId",
+                        foreignField:"_id",
+                        as:"Train Route"
+                    }
+                }
+            ])
             console.log(traindata);
             return Response.sendResponse("train detail", 201, { traindata });
 
@@ -53,7 +73,7 @@ export class TrainOperation {
 
     static async deleteTrain(train) {
         try {
-            const traindata = await TrainModel.findOne({ trainNumber: train });
+            const traindata = await TrainModel.findOne({_id: train });
             if (traindata) {
                 await TrainModel.deleteOne({ trainNumber: train });
                 return Response.sendResponse("Train Delete successfully", 201, {});
@@ -68,7 +88,7 @@ export class TrainOperation {
 
     static async updateTrain(trainNumber,detail){
         try {
-            const train = await TrainModel.findOne({ trainNumber: detail.trainNumber });
+            const train = await TrainModel.findOne({_id: detail.trainNumber });
             if(train){
                 const data = await TrainModel.updateOne({trainNumber:trainNumber},{
                     $set:{
@@ -76,7 +96,6 @@ export class TrainOperation {
                         routeId: detail.routeId,
                         destination: detail.destination,
                         no_of_coaches: detail.no_of_coaches,
-                        date: detail.date
                     }
                 });
                 return Response.sendResponse("update successfully",201,{data});

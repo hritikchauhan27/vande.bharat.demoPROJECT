@@ -44,7 +44,7 @@ const trainRoutes = [
             return trainResponse;
         }),
         options: {
-            auth: 'admin',
+            auth: 'user',
         },
     },
     {

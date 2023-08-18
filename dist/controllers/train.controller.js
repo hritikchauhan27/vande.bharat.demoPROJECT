@@ -52,7 +52,27 @@ class TrainOperation {
     static getTrain(train) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const traindata = yield models_1.TrainModel.findOne({ trainNumber: train });
+                const traindata = yield models_1.TrainModel.aggregate([
+                    {
+                        $match: { trainNumber: { $eq: train } }
+                    },
+                    {
+                        $lookup: {
+                            from: 'coaches',
+                            localField: "_id",
+                            foreignField: "trainId",
+                            as: "Coaches"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "trainroutes",
+                            localField: "routeId",
+                            foreignField: "_id",
+                            as: "Train Route"
+                        }
+                    }
+                ]);
                 console.log(traindata);
                 return response_1.Response.sendResponse("train detail", 201, { traindata });
             }
@@ -65,7 +85,7 @@ class TrainOperation {
     static deleteTrain(train) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const traindata = yield models_1.TrainModel.findOne({ trainNumber: train });
+                const traindata = yield models_1.TrainModel.findOne({ _id: train });
                 if (traindata) {
                     yield models_1.TrainModel.deleteOne({ trainNumber: train });
                     return response_1.Response.sendResponse("Train Delete successfully", 201, {});
@@ -81,7 +101,7 @@ class TrainOperation {
     static updateTrain(trainNumber, detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const train = yield models_1.TrainModel.findOne({ trainNumber: detail.trainNumber });
+                const train = yield models_1.TrainModel.findOne({ _id: detail.trainNumber });
                 if (train) {
                     const data = yield models_1.TrainModel.updateOne({ trainNumber: trainNumber }, {
                         $set: {
@@ -89,7 +109,6 @@ class TrainOperation {
                             routeId: detail.routeId,
                             destination: detail.destination,
                             no_of_coaches: detail.no_of_coaches,
-                            date: detail.date
                         }
                     });
                     return response_1.Response.sendResponse("update successfully", 201, { data });

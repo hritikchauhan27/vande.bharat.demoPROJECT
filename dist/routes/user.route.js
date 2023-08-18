@@ -79,7 +79,7 @@ const UserRoutes = [
             return Response;
         }),
         options: {
-            auth: "user",
+            auth: false,
         }
     }
 ];

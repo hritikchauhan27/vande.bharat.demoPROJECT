@@ -11,7 +11,7 @@ const seatRoutes: ServerRoute[]=[
             return seatResponse;
         },
         options: {
-            auth: false,
+            auth: "admin",
         },
     },
     {
@@ -23,7 +23,7 @@ const seatRoutes: ServerRoute[]=[
             return seatResponse;
         },
         options: {
-            auth: false,
+            auth: "user",
         },
     },
     {
@@ -35,15 +35,16 @@ const seatRoutes: ServerRoute[]=[
             return seatResponse;
         },
         options: {
-            auth: false,
+            auth: "admin",
         },
     },
     {
         method:'PATCH',
         path: '/updateSeat',
         handler: async (req,h)=>{
-            const seat =req.payload as any;
-            const seatResponse = await seatOperation.updateSeat(seat);
+            const seat =req.query.id;
+            const detail = req.payload as any;
+            const seatResponse = await seatOperation.updateSeat(seat,detail);
             return seatResponse;
         },
         options: {
