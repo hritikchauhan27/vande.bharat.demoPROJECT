@@ -27,7 +27,7 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
-            // tags:['api','user'],
+            tags: ['api', 'user'],
             validate: {
                 payload: joi_1.default.object({
                     username: joi_1.default.string().min(3).max(30).required(),
@@ -53,7 +53,7 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
-            // tags:['api','user'],
+            tags: ['api', 'user'],
             validate: {
                 payload: joi_1.default.object({
                     email: joi_1.default.string().email().lowercase().required(),
@@ -75,7 +75,7 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
-            // tags:['api','user'],
+            tags: ['api', 'user'],
             validate: {
                 headers: joi_1.default.object({
                     authorization: joi_1.default.string().required()
@@ -93,7 +93,7 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
-            // tags:['api','user'],
+            tags: ['api', 'user'],
             validate: {
                 headers: joi_1.default.object({
                     authorization: joi_1.default.string().required()

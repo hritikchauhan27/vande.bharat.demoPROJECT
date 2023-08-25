@@ -35,9 +35,27 @@ class trainRouteOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log(start, end);
-                const routeData = yield models_1.TrainRouteModel.findOne({ start_point: start, end_point: end });
-                console.log(routeData);
-                return response_1.Response.sendResponse("TrainRoute route detail", 201, { routeData });
+                const route = yield models_1.TrainRouteModel.findOne({ start_point: start, end_point: end });
+                if (route) {
+                    const routeData = yield models_1.TrainRouteModel.aggregate([
+                        {
+                            $match: { start_point: start, end_point: end }
+                        },
+                        {
+                            $lookup: {
+                                from: 'trains',
+                                localField: '_id',
+                                foreignField: 'routeId',
+                                as: 'Trains in the route'
+                            }
+                        }
+                    ]);
+                    console.log(routeData);
+                    return response_1.Response.sendResponse("TrainRoute route detail", 201, { routeData });
+                }
+                else {
+                    return response_1.Response.sendResponse("Route doesn't exist", 403, {});
+                }
             }
             catch (error) {
                 console.log(error);

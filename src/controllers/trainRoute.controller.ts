@@ -22,9 +22,26 @@ export class trainRouteOperation {
         try {
             console.log(start, end);
 
-            const routeData = await TrainRouteModel.findOne({ start_point: start, end_point: end });
-            console.log(routeData);
-            return Response.sendResponse("TrainRoute route detail", 201, { routeData });
+            const route = await TrainRouteModel.findOne({ start_point: start, end_point: end });
+            if(route){
+                const routeData = await TrainRouteModel.aggregate([
+                    {
+                        $match:{ start_point: start, end_point: end }
+                    },
+                    {
+                        $lookup:{
+                            from:'trains',
+                            localField:'_id',
+                            foreignField:'routeId',
+                            as:'Trains in the route'
+                        }
+                    }
+                ])
+                console.log(routeData);
+                return Response.sendResponse("TrainRoute route detail", 201, { routeData });
+            }else{
+                return Response.sendResponse("Route doesn't exist",403,{})
+            }
         } catch (error) {
             console.log(error);
             return Response.sendResponse("Server Error", 500, {});
