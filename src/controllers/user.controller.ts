@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { Sessions } from './session.controller';
 import { logout_session_redis, maintainSession } from '../middleware/redis.middleware';
 import { Auth } from '../middleware/decode';
-import { Response } from '../core/response';
+import { Response } from '../const/response';
 
 
 export class UserOperation {
@@ -104,6 +104,8 @@ export class UserOperation {
       return Response.sendResponse("Server Error",500,{});
     }
   }
+
+
 
   static async getUser(token){
     try {

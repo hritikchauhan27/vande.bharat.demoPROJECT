@@ -1,4 +1,4 @@
-import { Response } from '../core/response';
+import { Response } from '../const/response';
 import { TrainRouteModel } from '../models';
 
 export class trainRouteOperation {

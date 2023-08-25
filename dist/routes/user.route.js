@@ -27,12 +27,16 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
+            tags: ['api', 'user'],
             validate: {
                 payload: joi_1.default.object({
                     username: joi_1.default.string().min(3).max(30).required(),
                     email: joi_1.default.string().email().lowercase().required(),
                     password: joi_1.default.string().min(2).required(),
                     role: joi_1.default.string().valid("admin", "user"),
+                }),
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
                 })
             }
         }
@@ -49,11 +53,14 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
+            tags: ['api', 'user'],
             validate: {
                 payload: joi_1.default.object({
                     email: joi_1.default.string().email().lowercase().required(),
                     password: joi_1.default.string().min(2).required(),
-                    role: joi_1.default.string().valid("admin", "user"),
+                }),
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
                 })
             }
         }
@@ -68,6 +75,12 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
+            tags: ['api', 'user'],
+            validate: {
+                headers: joi_1.default.object({
+                    authorization: joi_1.default.string().required()
+                }).options({ allowUnknown: true })
+            }
         }
     },
     {
@@ -80,6 +93,12 @@ const UserRoutes = [
         }),
         options: {
             auth: false,
+            tags: ['api', 'user'],
+            validate: {
+                headers: joi_1.default.object({
+                    authorization: joi_1.default.string().required()
+                }).options({ allowUnknown: true })
+            }
         }
     }
 ];

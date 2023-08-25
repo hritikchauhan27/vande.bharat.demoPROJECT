@@ -1,5 +1,12 @@
 import { ServerRoute } from "@hapi/hapi";
 import { seatOperation } from "../controllers/seat.controller";
+import Joi from 'joi';
+
+const addSeatPayloadSchema = Joi.object({
+    coachId: Joi.string().required(),
+    trainId: Joi.string().required(),
+    seatNumber: Joi.string().required()
+});
 
 const seatRoutes: ServerRoute[]=[
     {
@@ -12,6 +19,13 @@ const seatRoutes: ServerRoute[]=[
         },
         options: {
             auth: "admin",
+            tags: ['api', 'seat'],
+            validate: {
+                payload: addSeatPayloadSchema,
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
+            }
         },
     },
     {
@@ -24,6 +38,12 @@ const seatRoutes: ServerRoute[]=[
         },
         options: {
             auth: "user",
+            tags: ['api', 'seat'],
+            validate: {
+                query: Joi.object({
+                    seat: Joi.string().required(), // Assuming 'seat' is the seat ID parameter
+                })
+            },
         },
     },
     {
@@ -36,19 +56,32 @@ const seatRoutes: ServerRoute[]=[
         },
         options: {
             auth: "admin",
+            tags: ['api', 'seat'],
+            validate: {
+                query: Joi.object({
+                    seat: Joi.string().required(), // Assuming 'seat' is the seat ID parameter
+                })
+            },
         },
     },
     {
         method:'PATCH',
         path: '/updateSeat',
         handler: async (req,h)=>{
-            const seat =req.query.id;
+            const seat =req.query.seat;
             const detail = req.payload as any;
             const seatResponse = await seatOperation.updateSeat(seat,detail);
             return seatResponse;
         },
         options: {
             auth: "admin",
+            tags: ['api', 'seat'],
+            validate: {
+                payload: addSeatPayloadSchema, 
+                query: Joi.object({
+                    seat: Joi.string().required(), 
+                }),
+            },
         },
     },
 ];

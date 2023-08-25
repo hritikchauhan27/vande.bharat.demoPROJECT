@@ -1,5 +1,5 @@
 import { SeatModel } from "../models";
-import { Response } from "../core/response";
+import { Response } from "../const/response";
 
 export class seatOperation {
     static async addSeat(detail) {

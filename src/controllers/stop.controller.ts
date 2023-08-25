@@ -1,5 +1,5 @@
 import { StopModel } from '../models';
-import { Response } from '../core/response';
+import { Response } from '../const/response';
 
 export class StopOperation{
     static async addStop(detail){

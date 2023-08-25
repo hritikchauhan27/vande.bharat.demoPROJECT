@@ -1,12 +1,12 @@
 import { BookingModel, CoachModel, SeatModel, UserModel } from "../models";
-import { Response } from "../core/response";
+import { Response } from "../const/response";
 import Auth from "../middleware/decode";
 import mongoose from "mongoose";
 
 export class bookingOperation{
 
 
-    static async addBooking(detail){
+    static async addBooking(detail:any){
         try {
             const seatNumbers = detail.seats.map((seat) => seat.seatNumber);
             console.log(seatNumbers);            

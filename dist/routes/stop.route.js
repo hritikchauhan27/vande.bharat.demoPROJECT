@@ -8,8 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const stop_controller_1 = require("../controllers/stop.controller");
+const joi_1 = __importDefault(require("joi"));
+const addStopPayloadSchema = joi_1.default.object({
+    stop_name: joi_1.default.string().required()
+});
 const StopRoutes = [
     {
         method: 'POST',
@@ -21,6 +28,13 @@ const StopRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'stop'],
+            validate: {
+                payload: addStopPayloadSchema,
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
+                })
+            }
         }
     },
     {
@@ -33,6 +47,7 @@ const StopRoutes = [
         }),
         options: {
             auth: 'user',
+            tags: ['api', 'stop'],
         }
     },
     {
@@ -45,6 +60,7 @@ const StopRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'stop'],
         }
     },
     {
@@ -57,6 +73,7 @@ const StopRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'stop'],
         }
     }
 ];

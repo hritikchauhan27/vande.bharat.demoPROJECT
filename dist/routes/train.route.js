@@ -8,8 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const train_controller_1 = require("../controllers/train.controller");
+const joi_1 = __importDefault(require("joi"));
+const addTrainPayloadSchema = joi_1.default.object({
+    trainNumber: joi_1.default.string().required(),
+    routeId: joi_1.default.string().required(),
+    destination: joi_1.default.string().required(),
+    no_of_coaches: joi_1.default.number().integer().min(0).required()
+});
 const trainRoutes = [
     {
         method: 'POST',
@@ -21,6 +31,13 @@ const trainRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'train'],
+            validate: {
+                payload: addTrainPayloadSchema,
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
+                })
+            }
         },
     },
     {
@@ -33,6 +50,7 @@ const trainRoutes = [
         }),
         options: {
             auth: 'user',
+            tags: ['api', 'train'],
         },
     },
     {
@@ -45,10 +63,11 @@ const trainRoutes = [
         }),
         options: {
             auth: 'user',
+            tags: ['api', 'train'],
         },
     },
     {
-        method: 'GET',
+        method: 'DELETE',
         path: '/deleteTrain',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
             const trainNumber = req.query.train;
@@ -57,6 +76,7 @@ const trainRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'train'],
         },
     },
     {
@@ -70,6 +90,7 @@ const trainRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'train'],
         },
     },
 ];

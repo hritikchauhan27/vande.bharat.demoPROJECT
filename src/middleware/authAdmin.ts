@@ -32,7 +32,7 @@ const plugin = {
 
     server.auth.strategy('user', 'jwt', {
       key: secretKey,
-      validate: async (decoded, request, h) => {
+      validate: async (decoded) => {
         const sessionStatus = await SessionModel.findOne({ userId: decoded.userId });
         // console.log(sessionStatus);
         if (!sessionStatus || sessionStatus.status==false) {

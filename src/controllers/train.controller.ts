@@ -1,5 +1,5 @@
 import { TrainModel, TrainRouteModel } from '../models';
-import { Response } from '../core/response';
+import { Response } from '../const/response';
 import { log } from 'console';
 
 export class TrainOperation {
@@ -24,13 +24,16 @@ export class TrainOperation {
         try {
             const train = await TrainModel.findOne({ trainNumber: trainNumber });
             console.log(train);
+            if(train){
             let routeId = train.routeId;
             console.log(routeId);
-
             const route = await TrainRouteModel.findOne({ _id: routeId });
             console.log(route);
 
-            return Response.sendResponse("train is running on route", 201, { route });
+            return Response.sendResponse("train is running on route", 201, { route });}
+            else{
+                return Response.sendResponse("train doesn't exist",403,{});
+            }
         }
         catch (error) {
             console.log(error);

@@ -1,5 +1,18 @@
 import { ServerRoute } from '@hapi/hapi';
 import { trainRouteOperation } from '../controllers/trainRoute.controller';
+import Joi from 'joi';
+
+
+const stopSchema = Joi.object({
+    stopId: Joi.string().required(),
+    order: Joi.number().integer().required()
+});
+
+const addRoutePayloadSchema = Joi.object({
+    start_point: Joi.string().required(),
+    stop_point: Joi.array().items(stopSchema).min(1).required(),
+    end_point: Joi.string().required()
+});
 
 const routeRoutes: ServerRoute[] = [
     {
@@ -12,6 +25,13 @@ const routeRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags:['api','trainroute'],
+            validate: {
+                payload: addRoutePayloadSchema,
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
+            }
         },
     },
     {
@@ -25,10 +45,17 @@ const routeRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'user',
+            tags:['api','trainroute'],
+            validate:{
+                query: Joi.object({
+                    start: Joi.string().required(),
+                    end: Joi.string().required()
+                })
+            }
         },
     },
     {
-        method: 'GET',
+        method: 'DELETE',
         path: '/deleteRoute',
         handler: async (req, h) => {
             const start = req.query.start;
@@ -38,6 +65,13 @@ const routeRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags:['api','trainroute'],
+            validate:{
+                query: Joi.object({
+                    start: Joi.string().required(),
+                    end: Joi.string().required()
+                })
+            }
         },
     },
     {
@@ -52,6 +86,21 @@ const routeRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags:['api','trainroute'],
+            validate:{
+                query: Joi.object({
+                    start: Joi.string().required(),
+                    end: Joi.string().required()
+                }),
+                payload: Joi.object({
+                    start_point: Joi.string().required(),
+                    stop_point: Joi.array().items(Joi.object({
+                        stopId: Joi.string().required(),
+                        order: Joi.number().integer().required()
+                    })).min(1).required(),
+                    end_point: Joi.string().required()
+                }),
+            }
         },
     },
 ];

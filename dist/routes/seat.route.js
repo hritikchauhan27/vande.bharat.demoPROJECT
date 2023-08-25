@@ -8,8 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const seat_controller_1 = require("../controllers/seat.controller");
+const joi_1 = __importDefault(require("joi"));
+const addSeatPayloadSchema = joi_1.default.object({
+    coachId: joi_1.default.string().required(),
+    trainId: joi_1.default.string().required(),
+    seatNumber: joi_1.default.string().required()
+});
 const seatRoutes = [
     {
         method: 'POST',
@@ -21,6 +30,13 @@ const seatRoutes = [
         }),
         options: {
             auth: "admin",
+            tags: ['api', 'seat'],
+            validate: {
+                payload: addSeatPayloadSchema,
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
+                })
+            }
         },
     },
     {
@@ -33,6 +49,7 @@ const seatRoutes = [
         }),
         options: {
             auth: "user",
+            tags: ['api', 'seat'],
         },
     },
     {
@@ -45,6 +62,7 @@ const seatRoutes = [
         }),
         options: {
             auth: "admin",
+            tags: ['api', 'seat'],
         },
     },
     {
@@ -58,6 +76,7 @@ const seatRoutes = [
         }),
         options: {
             auth: "admin",
+            tags: ['api', 'seat'],
         },
     },
 ];

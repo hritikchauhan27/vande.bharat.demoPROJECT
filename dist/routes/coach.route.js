@@ -8,8 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const coach_controller_1 = require("../controllers/coach.controller");
+const joi_1 = __importDefault(require("joi"));
+const addCoachPayloadSchema = joi_1.default.object({
+    trainId: joi_1.default.string().required(),
+    coachNumber: joi_1.default.string().required(),
+    no_of_seat: joi_1.default.number().integer().min(0).required()
+});
 const coachRoutes = [
     {
         method: 'POST',
@@ -21,6 +30,13 @@ const coachRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'coach'],
+            validate: {
+                payload: addCoachPayloadSchema,
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
+                })
+            }
         },
     },
     {
@@ -33,21 +49,9 @@ const coachRoutes = [
         }),
         options: {
             auth: 'user',
+            tags: ['api', 'coach'],
         },
     },
-    // {
-    //     method: 'GET',
-    //     path: '/trainDetail',
-    //     handler: async (req, h) => {
-    //         const coachId = req.query.coach;
-    //         const routeId = req.query.route;
-    //         const coachResponse = await CoachOperation.trainDetail(coachId,routeId);
-    //         return coachResponse;
-    //     },
-    //     options: {
-    //         auth: 'user',
-    //     },
-    // },
     {
         method: 'DELETE',
         path: '/deleteCoach',
@@ -58,6 +62,7 @@ const coachRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'coach'],
         },
     },
     {
@@ -71,6 +76,7 @@ const coachRoutes = [
         }),
         options: {
             auth: 'admin',
+            tags: ['api', 'coach'],
         },
     },
 ];

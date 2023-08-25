@@ -13,5 +13,5 @@ export let routes = [
     ...trainRoutes,
     ...coachRoutes,
     ...seatRoutes,
-    ...bookingRoutes
+    ...bookingRoutes,
 ];

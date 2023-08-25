@@ -1,5 +1,5 @@
 import { SessionModel } from '../models/session.model';
-import { Response } from '../core/response';
+import { Response } from '../const/response';
 
 export class Sessions{
   static async sessionEntry(device: string, user: any, userSession: any) {

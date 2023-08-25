@@ -1,5 +1,12 @@
 import { ServerRoute } from '@hapi/hapi';
 import { CoachOperation } from '../controllers/coach.controller';
+import Joi from 'joi';
+
+const addCoachPayloadSchema = Joi.object({
+    trainId: Joi.string().required(),
+    coachNumber: Joi.string().required(),
+    no_of_seat: Joi.number().integer().min(0).required()
+});
 
 const coachRoutes: ServerRoute[] = [
     {
@@ -12,6 +19,13 @@ const coachRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags: ['api', 'coach'],
+            validate: {
+                payload: addCoachPayloadSchema,
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
+            }
         },
     },
     {
@@ -24,21 +38,15 @@ const coachRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'user',
+            tags: ['api', 'coach'],
+            validate:{
+                query: Joi.object({
+                    coach: Joi.string().required()
+                })
+            }
         },
     },
-    // {
-    //     method: 'GET',
-    //     path: '/trainDetail',
-    //     handler: async (req, h) => {
-    //         const coachId = req.query.coach;
-    //         const routeId = req.query.route;
-    //         const coachResponse = await CoachOperation.trainDetail(coachId,routeId);
-    //         return coachResponse;
-    //     },
-    //     options: {
-    //         auth: 'user',
-    //     },
-    // },
+   
     {
         method: 'DELETE',
         path: '/deleteCoach',
@@ -49,6 +57,12 @@ const coachRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags: ['api', 'coach'],
+            validate:{
+                query: Joi.object({
+                    coach: Joi.string().required()
+                })
+            }
         },
     },
     {
@@ -62,6 +76,13 @@ const coachRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags: ['api', 'coach'],
+            validate:{
+                query: Joi.object({
+                    coach: Joi.string().required()
+                }),
+                payload: addCoachPayloadSchema,
+            }
         },
     },
 ];

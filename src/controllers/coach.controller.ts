@@ -1,17 +1,18 @@
 import { CoachModel, TrainRouteModel } from "../models";
 import { TrainModel } from "../models";
-import { Response } from "../core/response";
+import { Response } from "../const/response";
 
 export class CoachOperation {
   static async addCoach(detail) {
     try {
-      const coach = await CoachModel.findOne({ coachNumber: detail.coachNumber, trainId: detail.trainId});
-      console.log(coach);
-      
       const trainId = detail.trainId;
       console.log(trainId);
+      const [coach, train] = await Promise.all([
+        CoachModel.findOne({ coachNumber: detail.coachNumber, trainId: detail.trainId}),
+        TrainModel.findOne({ _id: trainId }),
+      ]);
 
-      const train = await TrainModel.findOne({ _id: trainId });
+      console.log(coach);
       console.log(train.no_of_coaches);
 
       if (train.no_of_coaches >= 8 || coach) {

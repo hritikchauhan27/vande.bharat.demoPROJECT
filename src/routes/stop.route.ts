@@ -1,5 +1,10 @@
 import { ServerRoute } from '@hapi/hapi';
 import { StopOperation } from '../controllers/stop.controller';
+import Joi from 'joi';
+
+const addStopPayloadSchema = Joi.object({
+    stop_name: Joi.string().required()
+});
 
 const StopRoutes: ServerRoute[] = [
     {
@@ -12,6 +17,13 @@ const StopRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags: ['api', 'stop'],
+            validate: {
+                payload: addStopPayloadSchema,
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
+            }
         }
     },
     {
@@ -24,6 +36,12 @@ const StopRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'user',
+            tags: ['api', 'stop'],
+            validate:{
+                query: Joi.object({
+                    stop: Joi.string().required(),
+                })
+            }
         }
     },
     {
@@ -36,6 +54,12 @@ const StopRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags: ['api', 'stop'],
+            validate:{
+                query: Joi.object({
+                    stop: Joi.string().required(),
+                })
+            }
         }
     },
     {
@@ -48,6 +72,13 @@ const StopRoutes: ServerRoute[] = [
         },
         options: {
             auth: 'admin',
+            tags: ['api', 'stop'],
+            validate:{
+                payload: Joi.object({
+                    stop: Joi.string().required(),
+                    newStop: Joi.string().required(),
+                })
+            }
         }
     }
 ]

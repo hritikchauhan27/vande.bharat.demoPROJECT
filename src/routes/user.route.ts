@@ -1,6 +1,7 @@
 import { ResponseToolkit, ServerRoute } from '@hapi/hapi';
 import { UserOperation } from '../controllers/user.controller';
 import Joi from 'joi';
+
 const UserRoutes: ServerRoute[] = [
     {
         method: 'POST',
@@ -14,13 +15,17 @@ const UserRoutes: ServerRoute[] = [
         },
         options: {
             auth: false,
+            tags:['api','user'],
             validate: {
                 payload: Joi.object({
                     username: Joi.string().min(3).max(30).required(),
                     email: Joi.string().email().lowercase().required(),
                     password: Joi.string().min(2).required(),
                     role: Joi.string().valid("admin", "user"),
-                })
+                }),
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
             }
         }
     },
@@ -36,12 +41,15 @@ const UserRoutes: ServerRoute[] = [
         },
         options: {
             auth: false,
+            tags:['api','user'],
             validate: {
                 payload: Joi.object({
                     email: Joi.string().email().lowercase().required(),
                     password: Joi.string().min(2).required(),
-                    role: Joi.string().valid("admin", "user"),
-                })
+                }),
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
             }
         }
     },
@@ -55,6 +63,12 @@ const UserRoutes: ServerRoute[] = [
         },
         options: {
             auth: false,
+            tags:['api','user'],
+            validate: {
+                headers: Joi.object({
+                    authorization: Joi.string().required()
+                }).options({ allowUnknown: true })
+            }
         }
     },
     {
@@ -67,6 +81,12 @@ const UserRoutes: ServerRoute[] = [
         },
         options: {
             auth: false,
+            tags:['api','user'],
+            validate: {
+                headers: Joi.object({
+                    authorization: Joi.string().required()
+                }).options({ allowUnknown: true })
+            }
         }
     }
 ];
