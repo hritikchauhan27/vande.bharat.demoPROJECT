@@ -9,17 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Response = void 0;
-class Response {
-    static sendResponse(message, code, data) {
+exports.chatbot = void 0;
+const training_data_1 = require("../const/training.data");
+const response_1 = require("../const/response");
+class chatbot {
+    static getReply(userInput) {
         return __awaiter(this, void 0, void 0, function* () {
-            return {
-                message: message,
-                code: code,
-                data: data
-            };
+            const response = training_data_1.classifier.classify(userInput);
+            return response_1.Response.sendResponse(`${response}`, 203, { response });
         });
     }
 }
-exports.Response = Response;
-//# sourceMappingURL=response.js.map
+exports.chatbot = chatbot;
+//# sourceMappingURL=chatbot.controller.js.map

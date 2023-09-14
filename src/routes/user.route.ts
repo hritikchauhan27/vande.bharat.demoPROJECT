@@ -88,6 +88,43 @@ const UserRoutes: ServerRoute[] = [
                 }).options({ allowUnknown: true })
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/forgotPassword',
+        handler: async (req, h) => {
+            // const email = req.payload;
+            let Response = await UserOperation.forgotPassword(req.payload);
+            return Response;
+        },
+        options: {
+            auth: false,
+            tags:['api','user'],
+            validate: {
+                payload: Joi.object({
+                    email: Joi.string().required()
+                }).options({ allowUnknown: true })
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/resetPassword',
+        handler: async (req, h) => {
+            let Response = await UserOperation.reset_password(req.payload);
+            return Response;
+        },
+        options: {
+            auth: false,
+            tags:['api','user'],
+            validate: {
+                payload: Joi.object({
+                    email: Joi.string().required(),
+                    otp: Joi.string().required(),
+                    newPassword: Joi.string().required()
+                }).options({ allowUnknown: true })
+            }
+        }
     }
 ];
 

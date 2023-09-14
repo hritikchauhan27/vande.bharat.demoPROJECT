@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -21,6 +44,8 @@ const session_controller_1 = require("./session.controller");
 const redis_middleware_1 = require("../middleware/redis.middleware");
 const decode_1 = require("../middleware/decode");
 const response_1 = require("../const/response");
+const redis = __importStar(require("redis"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 class UserOperation {
     static userSignUp(payload) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -133,6 +158,85 @@ class UserOperation {
             catch (error) {
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
+        });
+    }
+    static forgotPassword(details) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const client = yield redis.createClient();
+                    yield client.connect();
+                    const user = yield user_model_1.UserModel.findOne({ email: details.email });
+                    console.log(user);
+                    if (!user) {
+                        return 0;
+                    }
+                    let OTP = Math.floor(1000 + Math.random() * 9000);
+                    const options = { EX: 100 };
+                    yield client.set(details.email, OTP.toString(), options);
+                    console.log("otp set to redis");
+                    const transporter = nodemailer_1.default.createTransport({
+                        service: "gmail",
+                        host: "smtp.gmail.com",
+                        port: 465,
+                        secure: true,
+                        auth: {
+                            user: process.env.EMAIL_ADDRESS,
+                            pass: process.env.EMAIL_PASSWORD,
+                        },
+                    });
+                    const mailOptions = {
+                        from: process.env.EMAIL_ADDRESS,
+                        to: details.email,
+                        subject: 'Password Reset Request',
+                        text: `You are receiving this email because you (or someone else) has requested a password reset for your account.\n\n
+                Please click on the following link, or paste this into your browser to complete the process:\n\n
+                ${process.env.CLIENT_URL}/RESET PASSWORD OTP: ${OTP}\n\n
+                If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+                    };
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            console.log(error);
+                            return resolve(response_1.Response.sendResponse("error sending mail", 500, {}));
+                        }
+                        else {
+                            console.log("Email sent: " + info.response);
+                            return resolve(response_1.Response.sendResponse("mail send", 201, {}));
+                        }
+                    });
+                }
+                catch (err) {
+                    return resolve(response_1.Response.sendResponse("Server Error", 500, {}));
+                }
+            }));
+        });
+    }
+    static reset_password(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const user = yield user_model_1.UserModel.findOne({ email: payload.email });
+                    if (!user) {
+                        return resolve(response_1.Response.sendResponse("Invalid User", 403, {}));
+                    }
+                    const userOTP = yield (0, redis_middleware_1.get_otp)(payload.email);
+                    console.log("--------", userOTP);
+                    if (!userOTP || userOTP !== payload.otp) {
+                        return resolve(response_1.Response.sendResponse("Invalid OTP", 403, {}));
+                    }
+                    console.log(user.password);
+                    const salt = yield bcrypt_1.default.genSalt(10);
+                    const hashpassword = yield bcrypt_1.default.hash(payload.newPassword, salt);
+                    user.password = hashpassword;
+                    console.log(user.password);
+                    yield user.save();
+                    return resolve(response_1.Response.sendResponse("password reset successfully", 201, {}));
+                }
+                catch (error) {
+                    console.log(error);
+                    return resolve(response_1.Response.sendResponse("Server error", 500, {}));
+                }
+            }));
         });
     }
 }

@@ -43,3 +43,19 @@ export async function logout_session_redis(user) {
         console.log("error in deleting", err);
     }
 }
+
+export async function get_otp(email){
+        const client = await redis.createClient();
+        try{
+            await client.connect();
+        }
+        catch(err){
+            console.log(err);
+        }
+        const otp_details = await client.get(email);
+        console.log('----',otp_details);
+        
+        const userOTP = JSON.parse(otp_details);
+        return otp_details
+    
+}

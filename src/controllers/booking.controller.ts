@@ -1,12 +1,11 @@
 import { BookingModel, CoachModel, SeatModel, UserModel } from "../models";
 import { Response } from "../const/response";
-import Auth from "../middleware/decode";
 import mongoose from "mongoose";
+import { generatePDF, sendRecipient } from "../const/bookingResponse";
 
 export class bookingOperation{
 
-
-    static async addBooking(detail:any){
+    static async addBooking(detail){
         try {
             const seatNumbers = detail.seats.map((seat) => seat.seatNumber);
             console.log(seatNumbers);            
@@ -16,6 +15,7 @@ export class bookingOperation{
             }
             for(let i=0;i<len;i++){
             const seatCheck = await BookingModel.findOne({
+                            userId: detail.userId,
                             trainId: detail.trainId,
                             coachId: detail.coachId,
                             bookingDate: detail.bookingDate,
@@ -26,14 +26,14 @@ export class bookingOperation{
             }
             }     
             const booked = await BookingModel.find({
+                userId: detail.userId, 
                 trainId: detail.trainId,
                 coachId: detail.coachId,
                 bookingDate: detail.bookingDate,
-            })
+            })    
             console.log(booked);
-            const bookedlen =booked.length;
             let bookedSeat=0;
-            for(let i=0;i<bookedlen;i++){
+            for(let i=0;i<booked.length;i++){
                 bookedSeat = bookedSeat+ booked[i].seats.length;
                 console.log(bookedSeat);
             }
@@ -41,7 +41,13 @@ export class bookingOperation{
             if(bookedSeat>=10){
                 return Response.sendResponse("coach is fulled check another coach",403,{booked});
             }
-            
+
+            const user = await UserModel.findOne({_id: detail.userId});
+            console.log(user.email);
+            const Email = user.email;
+            const [filepath] = await generatePDF(detail);
+            await sendRecipient(filepath,Email)
+
             const bookingData = await BookingModel.create(detail);
             return Response.sendResponse("Booking successfull",201,{bookingData});
         } catch (error) {
@@ -104,9 +110,6 @@ export class bookingOperation{
         }
     }
 }
-
-
-
 
 
 

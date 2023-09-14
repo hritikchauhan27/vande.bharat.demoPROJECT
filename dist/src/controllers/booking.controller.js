@@ -16,6 +16,7 @@ exports.bookingOperation = void 0;
 const models_1 = require("../models");
 const response_1 = require("../const/response");
 const mongoose_1 = __importDefault(require("mongoose"));
+const bookingResponse_1 = require("../const/bookingResponse");
 class bookingOperation {
     static addBooking(detail) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,6 +29,7 @@ class bookingOperation {
                 }
                 for (let i = 0; i < len; i++) {
                     const seatCheck = yield models_1.BookingModel.findOne({
+                        userId: detail.userId,
                         trainId: detail.trainId,
                         coachId: detail.coachId,
                         bookingDate: detail.bookingDate,
@@ -38,14 +40,14 @@ class bookingOperation {
                     }
                 }
                 const booked = yield models_1.BookingModel.find({
+                    userId: detail.userId,
                     trainId: detail.trainId,
                     coachId: detail.coachId,
                     bookingDate: detail.bookingDate,
                 });
                 console.log(booked);
-                const bookedlen = booked.length;
                 let bookedSeat = 0;
-                for (let i = 0; i < bookedlen; i++) {
+                for (let i = 0; i < booked.length; i++) {
                     bookedSeat = bookedSeat + booked[i].seats.length;
                     console.log(bookedSeat);
                 }
@@ -53,6 +55,11 @@ class bookingOperation {
                 if (bookedSeat >= 10) {
                     return response_1.Response.sendResponse("coach is fulled check another coach", 403, { booked });
                 }
+                const user = yield models_1.UserModel.findOne({ _id: detail.userId });
+                console.log(user.email);
+                const Email = user.email;
+                const [filepath] = yield (0, bookingResponse_1.generatePDF)(detail);
+                yield (0, bookingResponse_1.sendRecipient)(filepath, Email);
                 const bookingData = yield models_1.BookingModel.create(detail);
                 return response_1.Response.sendResponse("Booking successfull", 201, { bookingData });
             }

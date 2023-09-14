@@ -5,6 +5,7 @@ import trainRoutes from "./train.route";
 import coachRoutes from "./coach.route";
 import seatRoutes from "./seat.route";
 import bookingRoutes from "./booking.route";
+import { ChatbotRoutes } from "./chatbot.route";
 
 export let routes = [
     ...UserRoutes, 
@@ -14,4 +15,5 @@ export let routes = [
     ...coachRoutes,
     ...seatRoutes,
     ...bookingRoutes,
+    ...ChatbotRoutes
 ];

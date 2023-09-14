@@ -100,6 +100,43 @@ const UserRoutes = [
                 }).options({ allowUnknown: true })
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/forgotPassword',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            // const email = req.payload;
+            let Response = yield user_controller_1.UserOperation.forgotPassword(req.payload);
+            return Response;
+        }),
+        options: {
+            auth: false,
+            tags: ['api', 'user'],
+            validate: {
+                payload: joi_1.default.object({
+                    email: joi_1.default.string().required()
+                }).options({ allowUnknown: true })
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/resetPassword',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            let Response = yield user_controller_1.UserOperation.reset_password(req.payload);
+            return Response;
+        }),
+        options: {
+            auth: false,
+            tags: ['api', 'user'],
+            validate: {
+                payload: joi_1.default.object({
+                    email: joi_1.default.string().required(),
+                    otp: joi_1.default.string().required(),
+                    newPassword: joi_1.default.string().required()
+                }).options({ allowUnknown: true })
+            }
+        }
     }
 ];
 exports.default = UserRoutes;
