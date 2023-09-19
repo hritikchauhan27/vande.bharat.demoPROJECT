@@ -22,12 +22,11 @@ class bookingOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const seatNumbers = detail.seats.map((seat) => seat.seatNumber);
-                console.log(seatNumbers);
-                let len = seatNumbers.length;
-                if (len > 4) {
+                console.log(seatNumbers, "seatNumbers----");
+                if (seatNumbers.length > 4) {
                     return response_1.Response.sendResponse("you are trying to book more then 4 seat", 403, {});
                 }
-                for (let i = 0; i < len; i++) {
+                for (let i = 0; i < seatNumbers.length; i++) {
                     const seatCheck = yield models_1.BookingModel.findOne({
                         userId: detail.userId,
                         trainId: detail.trainId,
@@ -45,13 +44,13 @@ class bookingOperation {
                     coachId: detail.coachId,
                     bookingDate: detail.bookingDate,
                 });
-                console.log(booked);
+                console.log(booked, "booked---------------");
                 let bookedSeat = 0;
                 for (let i = 0; i < booked.length; i++) {
                     bookedSeat = bookedSeat + booked[i].seats.length;
-                    console.log(bookedSeat);
+                    console.log(bookedSeat, "booked seat current");
                 }
-                console.log(bookedSeat);
+                console.log(bookedSeat, "bookedSeat total");
                 if (bookedSeat >= 10) {
                     return response_1.Response.sendResponse("coach is fulled check another coach", 403, { booked });
                 }
@@ -76,14 +75,14 @@ class bookingOperation {
                 if (booking) {
                     const cancelBooking = yield models_1.BookingModel.deleteOne({ _id: bookingId });
                     console.log(cancelBooking);
-                    return response_1.Response.sendResponse("booking canceled successfully", 201, { cancelBooking });
+                    return response_1.Response.sendResponse("Booking canceled successfully", 201, { cancelBooking });
                 }
                 else {
-                    return response_1.Response.sendResponse("booking doesn't exist", 403, {});
+                    return response_1.Response.sendResponse("Booking doesn't exist", 403, {});
                 }
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });

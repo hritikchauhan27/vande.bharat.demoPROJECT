@@ -32,7 +32,11 @@ export const plugins = [
                 { name: 'stop', description:'stop operation'},
                 { name: 'seat', description:'seat operation'},
                 { name: 'coach', description:'coach operation'},
-                { name: 'booking', description:'booking operation'}
+                { name: 'booking', description:'booking operation'},
+                { name: 'booking', description:'booking operation'},
+                { name: 'chatbot', description:'Chatbot'},
+                { name: 'google', description:'goole-login'}
+
             ],
             documentationPath: '/documentation', 
         },

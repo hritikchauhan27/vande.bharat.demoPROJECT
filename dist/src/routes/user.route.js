@@ -137,7 +137,7 @@ const UserRoutes = [
                 }).options({ allowUnknown: true })
             }
         }
-    }
+    },
 ];
 exports.default = UserRoutes;
 //# sourceMappingURL=user.route.js.map

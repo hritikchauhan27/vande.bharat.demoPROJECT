@@ -12,6 +12,7 @@ const coach_route_1 = __importDefault(require("./coach.route"));
 const seat_route_1 = __importDefault(require("./seat.route"));
 const booking_route_1 = __importDefault(require("./booking.route"));
 const chatbot_route_1 = require("./chatbot.route");
+const google_login_1 = require("./google.login");
 exports.routes = [
     ...user_route_1.default,
     ...stop_route_1.default,
@@ -20,6 +21,7 @@ exports.routes = [
     ...coach_route_1.default,
     ...seat_route_1.default,
     ...booking_route_1.default,
-    ...chatbot_route_1.ChatbotRoutes
+    ...chatbot_route_1.ChatbotRoutes,
+    ...google_login_1.GoogleRoutes
 ];
 //# sourceMappingURL=index.route.js.map

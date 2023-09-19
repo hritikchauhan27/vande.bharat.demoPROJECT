@@ -49,66 +49,47 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 class UserOperation {
     static userSignUp(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const details = payload;
             try {
-                const user = yield user_model_1.UserModel.findOne({ username: details.username });
-                console.log("user  ", user);
-                if (!user) {
-                    const hashpassword = yield decode_1.Auth.generate_hash_pass(details.password);
-                    const user_details = new user_model_1.UserModel({
-                        username: details.username,
-                        password: hashpassword,
-                        email: details.email,
-                        role: details.role,
-                    });
-                    const Details = yield user_details.save();
-                    console.log(Details);
-                    return response_1.Response.sendResponse("User Register Successfully", 201, {});
+                const { username, password, email, role } = payload;
+                const existingUser = yield user_model_1.UserModel.findOne({ username });
+                if (existingUser) {
+                    return response_1.Response.sendResponse("User already exists", 403, {});
                 }
-                else {
-                    console.log("user  12");
-                    return response_1.Response.sendResponse("User already exist", 403, {});
-                }
+                const hashpassword = yield decode_1.Auth.generate_hash_pass(password);
+                const user_details = new user_model_1.UserModel({ username, password: hashpassword, email, role });
+                const userDetails = yield user_details.save();
+                return response_1.Response.sendResponse("User Register Successfully", 201, { userDetails });
             }
-            catch (err) {
-                console.log("user  ", err);
+            catch (error) {
+                console.error("userSignUp error: ", error);
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });
     }
     static userLogin(email, password, device) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_model_1.UserModel.findOne({ email: email });
-            const role = user.role;
-            console.log(role);
-            const forToken = { email, role };
             try {
-                if (user) {
-                    const userSession = yield session_model_1.SessionModel.findOne({ user_id: user._id });
-                    console.log(userSession);
-                    if (!(userSession === null || userSession === void 0 ? void 0 : userSession.status)) {
-                        const hash = user.password;
-                        if (yield bcrypt_1.default.compare(password, hash)) {
-                            const token = jsonwebtoken_1.default.sign(forToken, process.env.SECRET_KEY);
-                            console.log(token);
-                            yield session_controller_1.Sessions.sessionEntry(device, user, userSession);
-                            yield (0, redis_middleware_1.maintainSession)(user, device);
-                            return response_1.Response.sendResponse("login successfully", 201, { user, token });
-                        }
-                        else {
-                            return response_1.Response.sendResponse("password is incorrect", 404, {});
-                        }
-                    }
-                    else {
-                        return response_1.Response.sendResponse("User is already active", 404, {});
-                    }
+                const user = yield user_model_1.UserModel.findOne({ email });
+                if (!user) {
+                    return response_1.Response.sendResponse("User not found", 404, {});
                 }
-                else {
-                    return response_1.Response.sendResponse("user not found", 404, {});
+                const userSession = yield session_model_1.SessionModel.findOne({ user_id: user._id });
+                if (userSession === null || userSession === void 0 ? void 0 : userSession.status) {
+                    return response_1.Response.sendResponse("User is already active", 404, {});
                 }
+                const hash = user.password;
+                const passwordMatch = yield bcrypt_1.default.compare(password, hash);
+                if (!passwordMatch) {
+                    return response_1.Response.sendResponse("Password is incorrect", 404, {});
+                }
+                const forToken = { email, role: user.role };
+                const token = jsonwebtoken_1.default.sign(forToken, process.env.SECRET_KEY);
+                yield session_controller_1.Sessions.sessionEntry(device, user, userSession);
+                yield (0, redis_middleware_1.maintainSession)(user, device);
+                return response_1.Response.sendResponse("Login successfully", 201, { user, token });
             }
             catch (error) {
-                console.log(error);
+                console.error("userLogin error: ", error);
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });
@@ -118,27 +99,19 @@ class UserOperation {
             try {
                 const userToken = yield decode_1.Auth.verify_token(token);
                 const user = yield user_model_1.UserModel.findOne({ email: userToken.email });
-                console.log(user);
-                if (user) {
-                    const userSession = yield session_model_1.SessionModel.findOne({ user_id: user.id });
-                    console.log(userSession);
-                    if (userSession) {
-                        if (userSession.status) {
-                            yield (0, redis_middleware_1.logout_session_redis)(user);
-                            const updatedUserSession = yield session_model_1.SessionModel.findOneAndUpdate({ _id: userSession.id }, { status: !userSession.status });
-                            console.log(updatedUserSession);
-                            return response_1.Response.sendResponse("User logOut Successfully", 201, {});
-                        }
-                        else {
-                            return response_1.Response.sendResponse("User is already inactive", 404, {});
-                        }
-                    }
-                }
-                else {
+                if (!user) {
                     return response_1.Response.sendResponse("User not found", 404, {});
                 }
+                const userSession = yield session_model_1.SessionModel.findOne({ user_id: user._id });
+                if (!userSession || !userSession.status) {
+                    return response_1.Response.sendResponse("User is already inactive", 404, {});
+                }
+                yield (0, redis_middleware_1.logout_session_redis)(user);
+                yield session_model_1.SessionModel.findOneAndUpdate({ _id: userSession._id }, { status: !userSession.status });
+                return response_1.Response.sendResponse("User logOut Successfully", 201, {});
             }
-            catch (err) {
+            catch (error) {
+                console.error("logout_user error: ", error);
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });
@@ -148,14 +121,13 @@ class UserOperation {
             try {
                 const userToken = yield decode_1.Auth.verify_token(token);
                 const user = yield user_model_1.UserModel.findOne({ email: userToken.email });
-                if (user) {
-                    return response_1.Response.sendResponse("User detail", 201, { user });
+                if (!user) {
+                    return response_1.Response.sendResponse("User doesn't exist", 403, {});
                 }
-                else {
-                    return response_1.Response.sendResponse("user doesn't exist", 403, {});
-                }
+                return response_1.Response.sendResponse("User detail", 201, { user });
             }
             catch (error) {
+                console.error("getUser error: ", error);
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });

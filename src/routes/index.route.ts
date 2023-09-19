@@ -6,6 +6,7 @@ import coachRoutes from "./coach.route";
 import seatRoutes from "./seat.route";
 import bookingRoutes from "./booking.route";
 import { ChatbotRoutes } from "./chatbot.route";
+import { GoogleRoutes } from "./google.login";
 
 export let routes = [
     ...UserRoutes, 
@@ -15,5 +16,6 @@ export let routes = [
     ...coachRoutes,
     ...seatRoutes,
     ...bookingRoutes,
-    ...ChatbotRoutes
+    ...ChatbotRoutes,
+    ...GoogleRoutes
 ];

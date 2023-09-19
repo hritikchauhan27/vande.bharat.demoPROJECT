@@ -1,22 +1,19 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.classifier = void 0;
-const natural_1 = __importDefault(require("natural"));
-const trainingData = [
+import natural from 'natural';
+
+
+const trainingData=[
+
     {
-        input: "hii",
-        output: "hello welcome"
+        input:"hii",
+        output:"hello welcome"
     },
     {
-        "input": "what is your name",
-        "output": "I am Thor's Hammer chatbot, you can ask me anything about Vande Bharat Train Booking"
+        "input":"what is your name",
+        "output":"I am Thor's Hammer chatbot, you can ask me anything about Vande Bharat Train Booking"
     },
     {
-        "input": "who are you",
-        "output": "I am Thor's Hammer chatbot, you can ask me anything about Vande Bharat Train Booking"
+        "input":"who are you",
+        "output":"I am Thor's Hammer chatbot, you can ask me anything about Vande Bharat Train Booking"
     },
     {
         "input": "How can I book a train ticket?",
@@ -118,10 +115,19 @@ const trainingData = [
         "input": "What are the options for online check-in and e-tickets?",
         "output": "We offer e-tickets, which can be booked online and downloaded as PDFs. You can carry the e-ticket on your mobile device or print it for easy access during your journey."
     },
-];
-exports.classifier = new natural_1.default.BayesClassifier();
+
+]
+
+
+
+
+
+export const classifier = new natural.BayesClassifier();
+
 trainingData.forEach((data) => {
-    exports.classifier.addDocument(data.input, data.output);
+  classifier.addDocument(data.input, data.output);
 });
-exports.classifier.train();
-//# sourceMappingURL=training.data.js.map
+
+classifier.train();
+
+

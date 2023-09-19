@@ -1,4 +1,4 @@
-import { ResponseToolkit, ServerRoute } from '@hapi/hapi';
+import { ServerRoute } from '@hapi/hapi';
 import { UserOperation } from '../controllers/user.controller';
 import Joi from 'joi';
 
@@ -125,7 +125,8 @@ const UserRoutes: ServerRoute[] = [
                 }).options({ allowUnknown: true })
             }
         }
-    }
+    },
+       
 ];
 
 export default UserRoutes;

@@ -1,6 +1,6 @@
 import { ServerRoute } from "@hapi/hapi";
 import Joi from 'joi';
-import { chatbot } from "../controllers/chatbot.controller";
+import { chatbot } from "../chatbot/chatbot.controller";
 
 export const ChatbotRoutes: ServerRoute[] = [
     {
@@ -13,7 +13,7 @@ export const ChatbotRoutes: ServerRoute[] = [
         },
         options: {
             auth: false,
-            tags: ['api', 'booking'],
+            tags: ['api', 'chatbot'],
             validate: {
                 query:Joi.object({
                     query: Joi.string()

@@ -4,7 +4,7 @@ import path from 'path';
 import nodemailer from 'nodemailer';
 
 export async function generatePDF(data:any) {
-    const outputPath = path.join(__dirname, 'pdfs'); // Change to your desired folder path
+    const outputPath = path.join(__dirname, 'pdfs'); 
     const outputFilename = `invoice-${data.bookingDate}.pdf`;
     const outputFilePath = path.join(outputPath, outputFilename);
 
@@ -29,17 +29,18 @@ export async function generatePDF(data:any) {
     doc.font('Helvetica');
 
     // Add personalized message
-    doc.text(`Hello, { align: 'center' }`);
+    doc.text(`Hello,`);
     doc.moveDown(0.5); // Add some space
     doc.text('Thank you for booking a ticket. Have a safe journey.');
 
     // Add booking details
-    doc.moveDown(); // Add some space
+    const seatNumbers = data.seats.map((seat) => seat.seatNumber);
+    doc.moveDown();
     doc.text(`User ID: ${data.userId}`);
     doc.text(`Booking Date: ${data.bookingDate}`);
     doc.text(`Train Id: ${data.trainId}`);
     doc.text(`Coach Id: ${data.coachId}`);
-    doc.text(`Seat Number:${"data.seats.seatNumber"}`)
+    doc.text(`Seat Number:${seatNumbers}`)
     doc.end();
 
     console.log('PDF invoice generated and saved:', outputFilePath);

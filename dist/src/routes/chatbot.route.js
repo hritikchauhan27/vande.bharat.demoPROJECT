@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatbotRoutes = void 0;
 const joi_1 = __importDefault(require("joi"));
-const chatbot_controller_1 = require("../controllers/chatbot.controller");
+const chatbot_controller_1 = require("../chatbot/chatbot.controller");
 exports.ChatbotRoutes = [
     {
         method: 'POST',
@@ -26,7 +26,7 @@ exports.ChatbotRoutes = [
         }),
         options: {
             auth: false,
-            tags: ['api', 'booking'],
+            tags: ['api', 'chatbot'],
             validate: {
                 query: joi_1.default.object({
                     query: joi_1.default.string()

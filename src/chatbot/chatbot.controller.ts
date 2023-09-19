@@ -1,4 +1,4 @@
-import {classifier} from '../const/training.data'
+import {classifier} from './training.data'
 import { Response } from '../const/response';
 
 export class chatbot{
