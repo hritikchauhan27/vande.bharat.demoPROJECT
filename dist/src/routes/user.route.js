@@ -103,6 +103,30 @@ const UserRoutes = [
     },
     {
         method: 'POST',
+        path: '/changePassword',
+        handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
+            const { email, previousPassword, newPassword } = req.payload;
+            let Response = yield user_controller_1.UserOperation.change_password(email, previousPassword, newPassword);
+            console.log("change response data", Response);
+            return Response;
+        }),
+        options: {
+            auth: false,
+            tags: ['api', 'user'],
+            validate: {
+                payload: joi_1.default.object({
+                    email: joi_1.default.string().email().lowercase().required(),
+                    previousPassword: joi_1.default.string().min(2).required(),
+                    newPassword: joi_1.default.string().min(2).required(),
+                }),
+                failAction: (request, h, err) => __awaiter(void 0, void 0, void 0, function* () {
+                    throw err;
+                })
+            }
+        }
+    },
+    {
+        method: 'POST',
         path: '/forgotPassword',
         handler: (req, h) => __awaiter(void 0, void 0, void 0, function* () {
             // const email = req.payload;

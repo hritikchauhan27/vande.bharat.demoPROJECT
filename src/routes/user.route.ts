@@ -91,6 +91,30 @@ const UserRoutes: ServerRoute[] = [
     },
     {
         method: 'POST',
+        path: '/changePassword',
+        handler: async (req, h) => {
+            const { email, previousPassword, newPassword } = req.payload as any;
+            let Response = await UserOperation.change_password(email,previousPassword,newPassword);
+            console.log("change response data", Response);
+            return Response;
+        },
+        options: {
+            auth: false,
+            tags:['api','user'],
+            validate: {
+                payload: Joi.object({
+                    email: Joi.string().email().lowercase().required(),
+                    previousPassword: Joi.string().min(2).required(),
+                    newPassword: Joi.string().min(2).required(),
+                }),
+                failAction: async (request, h, err) => {
+                    throw err;
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
         path: '/forgotPassword',
         handler: async (req, h) => {
             // const email = req.payload;

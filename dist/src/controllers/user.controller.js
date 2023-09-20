@@ -51,14 +51,25 @@ class UserOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { username, password, email, role } = payload;
-                const existingUser = yield user_model_1.UserModel.findOne({ username });
+                const existingUser = yield user_model_1.UserModel.findOne({ username, password, email, role });
                 if (existingUser) {
                     return response_1.Response.sendResponse("User already exists", 403, {});
                 }
+                const userWithoutPassword = yield user_model_1.UserModel.findOne({ username, email, role });
                 const hashpassword = yield decode_1.Auth.generate_hash_pass(password);
-                const user_details = new user_model_1.UserModel({ username, password: hashpassword, email, role });
-                const userDetails = yield user_details.save();
-                return response_1.Response.sendResponse("User Register Successfully", 201, { userDetails });
+                if (userWithoutPassword) {
+                    let data = yield user_model_1.UserModel.updateOne({ email }, {
+                        $set: {
+                            password: hashpassword
+                        }
+                    });
+                    return response_1.Response.sendResponse("User Register Successfully", 201, { data });
+                }
+                else {
+                    const user_details = new user_model_1.UserModel({ username, password: hashpassword, email, role });
+                    const userDetails = yield user_details.save();
+                    return response_1.Response.sendResponse("User Register Successfully", 201, { userDetails });
+                }
             }
             catch (error) {
                 console.error("userSignUp error: ", error);
@@ -69,9 +80,9 @@ class UserOperation {
     static userLogin(email, password, device) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield user_model_1.UserModel.findOne({ email });
+                const user = yield user_model_1.UserModel.findOne({ email, password });
                 if (!user) {
-                    return response_1.Response.sendResponse("User not found", 404, {});
+                    return response_1.Response.sendResponse("User not found or you sign in through google please signup first", 404, {});
                 }
                 const userSession = yield session_model_1.SessionModel.findOne({ user_id: user._id });
                 if (userSession === null || userSession === void 0 ? void 0 : userSession.status) {
@@ -129,6 +140,28 @@ class UserOperation {
             catch (error) {
                 console.error("getUser error: ", error);
                 return response_1.Response.sendResponse("Server Error", 500, {});
+            }
+        });
+    }
+    static change_password(email, previousPassword, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield user_model_1.UserModel.findOne({ email });
+                if (!user) {
+                    return response_1.Response.sendResponse('User not found', 404, {});
+                }
+                const passwordMatch = yield bcrypt_1.default.compare(previousPassword, user.password);
+                if (!passwordMatch) {
+                    return response_1.Response.sendResponse('Incorrect previous password', 400, {});
+                }
+                const saltRounds = 10;
+                const hashedPassword = yield bcrypt_1.default.hash(newPassword, saltRounds);
+                yield user_model_1.UserModel.updateOne({ email }, { $set: { password: hashedPassword } });
+                return response_1.Response.sendResponse('Password changed successfully', 200, {});
+            }
+            catch (error) {
+                console.error(error);
+                return response_1.Response.sendResponse('Internal Server Error', 500, {});
             }
         });
     }

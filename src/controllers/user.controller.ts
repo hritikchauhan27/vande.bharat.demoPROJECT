@@ -12,87 +12,97 @@ import nodemailer from 'nodemailer';
 
 export class UserOperation {
 
-    static async userSignUp(payload) {
-      try {
-        const { username, password, email, role } = payload;
-        const existingUser = await UserModel.findOne({ username });
-  
-        if (existingUser) {
-          return Response.sendResponse("User already exists", 403, {});
-        }
-  
-        const hashpassword = await Auth.generate_hash_pass(password);
+  static async userSignUp(payload) {
+    try {
+      const { username, password, email, role } = payload;
+      const existingUser = await UserModel.findOne({ username, password, email, role });
+
+      if (existingUser) {
+        return Response.sendResponse("User already exists", 403, {});
+      }
+      const userWithoutPassword = await UserModel.findOne({ username, email, role });
+      const hashpassword = await Auth.generate_hash_pass(password);
+      if (userWithoutPassword) {
+        let data = await UserModel.updateOne({ email }, {
+          $set: {
+            password: hashpassword
+          }
+        });
+        return Response.sendResponse("User Register Successfully", 201, { data });
+      }
+      else {
         const user_details = new UserModel({ username, password: hashpassword, email, role });
         const userDetails = await user_details.save();
-  
-        return Response.sendResponse("User Register Successfully", 201, {userDetails});
-      } catch (error) {
-        console.error("userSignUp error: ", error);
-        return Response.sendResponse("Server Error", 500, {});
+
+        return Response.sendResponse("User Register Successfully", 201, { userDetails });
       }
+    } catch (error) {
+      console.error("userSignUp error: ", error);
+      return Response.sendResponse("Server Error", 500, {});
     }
+  }
 
 
-    static async userLogin(email, password, device) {
-      try {
-        const user = await UserModel.findOne({ email });
-        if (!user) {
-          return Response.sendResponse("User not found", 404, {});
-        }
-        const userSession = await SessionModel.findOne({ user_id: user._id });
-        if (userSession?.status) {
-          return Response.sendResponse("User is already active", 404, {});
-        }
-        const hash = user.password;
-        const passwordMatch = await bcrypt.compare(password, hash);
-        if (!passwordMatch) {
-          return Response.sendResponse("Password is incorrect", 404, {});
-        }
-        const forToken = { email, role: user.role };
-        const token = jwt.sign(forToken, process.env.SECRET_KEY, {expiresIn: '10h'});
-        await Sessions.sessionEntry(device, user, userSession);
-        await maintainSession(user, device);
-        return Response.sendResponse("Login successfully", 201, { user, token });
-      } catch (error) {
-        console.error("userLogin error: ", error);
-        return Response.sendResponse("Server Error", 500, {});
+  static async userLogin(email, password, device) {
+    try {
+      const user = await UserModel.findOne({ email, password });
+      if (!user) {
+        return Response.sendResponse("User not found or you sign in through google please signup first", 404, {});
       }
-    }
-
-
-    static async logout_user(token) {
-      try {
-        const userToken:any = await Auth.verify_token(token);
-        const user = await UserModel.findOne({ email: userToken.email });
-  
-        if (!user) {
-          return Response.sendResponse("User not found", 404, {});
-        }
-  
-        const userSession = await SessionModel.findOne({ user_id: user._id });
-  
-        if (!userSession || !userSession.status) {
-          return Response.sendResponse("User is already inactive", 404, {});
-        }
-  
-        await logout_session_redis(user);
-  
-        await SessionModel.findOneAndUpdate(
-          { _id: userSession._id },
-          { status: !userSession.status }
-        );
-  
-        return Response.sendResponse("User logOut Successfully", 201, {});
-      } catch (error) {
-        console.error("logout_user error: ", error);
-        return Response.sendResponse("Server Error", 500, {});
+      const userSession = await SessionModel.findOne({ user_id: user._id });
+      if (userSession?.status) {
+        return Response.sendResponse("User is already active", 404, {});
       }
+      const hash = user.password;
+      const passwordMatch = await bcrypt.compare(password, hash);
+      if (!passwordMatch) {
+        return Response.sendResponse("Password is incorrect", 404, {});
+      }
+      const forToken = { email, role: user.role };
+      const token = jwt.sign(forToken, process.env.SECRET_KEY, { expiresIn: '10h' });
+      await Sessions.sessionEntry(device, user, userSession);
+      await maintainSession(user, device);
+      return Response.sendResponse("Login successfully", 201, { user, token });
+    } catch (error) {
+      console.error("userLogin error: ", error);
+      return Response.sendResponse("Server Error", 500, {});
     }
+  }
+
+
+  static async logout_user(token) {
+    try {
+      const userToken: any = await Auth.verify_token(token);
+      const user = await UserModel.findOne({ email: userToken.email });
+
+      if (!user) {
+        return Response.sendResponse("User not found", 404, {});
+      }
+
+      const userSession = await SessionModel.findOne({ user_id: user._id });
+
+      if (!userSession || !userSession.status) {
+        return Response.sendResponse("User is already inactive", 404, {});
+      }
+
+      await logout_session_redis(user);
+
+      await SessionModel.findOneAndUpdate(
+        { _id: userSession._id },
+        { status: !userSession.status }
+      );
+
+      return Response.sendResponse("User logOut Successfully", 201, {});
+    } catch (error) {
+      console.error("logout_user error: ", error);
+      return Response.sendResponse("Server Error", 500, {});
+    }
+  }
 
 
   static async getUser(token) {
     try {
-      const userToken:any = await Auth.verify_token(token);
+      const userToken: any = await Auth.verify_token(token);
       const user = await UserModel.findOne({ email: userToken.email });
       if (!user) {
         return Response.sendResponse("User doesn't exist", 403, {});
@@ -104,7 +114,26 @@ export class UserOperation {
     }
   }
 
+  static async change_password(email, previousPassword, newPassword) {
+    try {
+      const user = await UserModel.findOne({ email });
 
+      if (!user) {
+        return Response.sendResponse('User not found', 404, {});
+      }
+      const passwordMatch = await bcrypt.compare(previousPassword, user.password);
+      if (!passwordMatch) {
+        return Response.sendResponse('Incorrect previous password', 400, {});
+      }
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+      await UserModel.updateOne({ email }, { $set: { password: hashedPassword } });
+      return Response.sendResponse('Password changed successfully', 200, {});
+    } catch (error) {
+      console.error(error);
+      return Response.sendResponse('Internal Server Error', 500, {});
+    }
+  }
 
 
   static async forgotPassword(details) {
