@@ -33,11 +33,14 @@ class seatOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const seatdata = yield models_1.SeatModel.findOne({ seatNumber: seat });
+                if (!seatdata) {
+                    return response_1.Response.sendResponse("Seat doesn't exist", 403, {});
+                }
                 console.log(seatdata);
-                return response_1.Response.sendResponse("seat detail", 201, { seatdata });
+                return response_1.Response.sendResponse("Seat detail", 201, { seatdata });
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });

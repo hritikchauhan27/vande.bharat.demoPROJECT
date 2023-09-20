@@ -34,16 +34,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_otp = exports.logout_session_redis = exports.maintainSession = void 0;
 const redis = __importStar(require("redis"));
+function createRedisClient() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = yield redis.createClient();
+        yield client.connect();
+        return client;
+    });
+}
 function maintainSession(user, device) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const client = yield redis.createClient();
-            try {
-                yield client.connect();
-            }
-            catch (err) {
-                console.log(err);
-            }
+            const client = yield createRedisClient();
             if (user) {
                 yield client.SET(user.id, JSON.stringify({
                     'user_id': user._id,
@@ -67,36 +68,24 @@ function logout_session_redis(user) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(user.email);
         try {
-            const client = yield redis.createClient();
-            try {
-                yield client.connect();
-            }
-            catch (err) {
-                console.log(err);
-            }
+            const client = yield createRedisClient();
             console.log(user.username);
             yield client.del(user.email);
-            console.log("delete successfully");
+            console.log("Delete successfully");
         }
         catch (err) {
-            console.log("error in deleting", err);
+            console.log("Error in deleting", err);
         }
     });
 }
 exports.logout_session_redis = logout_session_redis;
 function get_otp(email) {
     return __awaiter(this, void 0, void 0, function* () {
-        const client = yield redis.createClient();
-        try {
-            yield client.connect();
-        }
-        catch (err) {
-            console.log(err);
-        }
-        const otp_details = yield client.get(email);
-        console.log('----', otp_details);
-        const userOTP = JSON.parse(otp_details);
-        return otp_details;
+        const client = yield createRedisClient();
+        const otpDetails = yield client.get(email);
+        console.log('----', otpDetails);
+        const userOTP = JSON.parse(otpDetails);
+        return otpDetails;
     });
 }
 exports.get_otp = get_otp;

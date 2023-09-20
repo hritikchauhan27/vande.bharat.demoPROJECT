@@ -18,25 +18,21 @@ class CoachOperation {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const trainId = detail.trainId;
-                console.log(trainId);
-                const [coach, train] = yield Promise.all([
-                    models_1.CoachModel.findOne({ coachNumber: detail.coachNumber, trainId: detail.trainId }),
+                const [existingCoach, train] = yield Promise.all([
+                    models_1.CoachModel.findOne({ coachNumber: detail.coachNumber, trainId }),
                     models_2.TrainModel.findOne({ _id: trainId }),
                 ]);
-                console.log(coach);
-                console.log(train.no_of_coaches);
-                if (train.no_of_coaches >= 8 || coach) {
-                    return response_1.Response.sendResponse("Number of coaches should be less then 8 or coach already exist", 403, {});
+                if (train.no_of_coaches >= 8 || existingCoach) {
+                    return response_1.Response.sendResponse("Number of coaches should be less than 8 or coach already exists", 403, {});
                 }
                 else {
-                    console.log(train.no_of_coaches);
                     const coachData = yield models_1.CoachModel.create(detail);
-                    const trainData = yield models_2.TrainModel.findOneAndUpdate({ _id: trainId }, { no_of_coaches: train.no_of_coaches + 1 });
-                    return response_1.Response.sendResponse("coach registered successfully", 201, { coachData, trainData });
+                    const updatedTrain = yield models_2.TrainModel.findOneAndUpdate({ _id: trainId }, { $inc: { no_of_coaches: 1 } });
+                    return response_1.Response.sendResponse("Coach registered successfully", 201, { coachData, updatedTrain });
                 }
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });
@@ -44,19 +40,18 @@ class CoachOperation {
     static deleteCoach(coach) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const coachdata = yield models_1.CoachModel.findOne({ coachNumber: coach });
-                const trainId = coachdata.trainId;
-                console.log(trainId);
+                const coachData = yield models_1.CoachModel.findOne({ coachNumber: coach });
+                const trainId = coachData.trainId;
                 const train = yield models_2.TrainModel.findOne({ _id: trainId });
-                if (coachdata) {
-                    const data = yield models_1.CoachModel.deleteOne({ coachNumber: coach });
-                    const trainData = yield models_2.TrainModel.findOneAndUpdate({ _id: trainId }, { no_of_coaches: train.no_of_coaches - 1 });
-                    return response_1.Response.sendResponse("coach deleted successfully", 201, { data });
+                if (coachData) {
+                    const deletedCoach = yield models_1.CoachModel.deleteOne({ coachNumber: coach });
+                    const updatedTrain = yield models_2.TrainModel.findOneAndUpdate({ _id: trainId }, { $inc: { no_of_coaches: -1 } });
+                    return response_1.Response.sendResponse("Coach deleted successfully", 201, { deletedCoach, updatedTrain });
                 }
-                return response_1.Response.sendResponse("coach doesn't exist", 403, {});
+                return response_1.Response.sendResponse("Coach doesn't exist", 403, {});
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });
@@ -64,24 +59,23 @@ class CoachOperation {
     static updateCoach(coach, detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const coachdata = yield models_1.CoachModel.findOne({ _id: coach });
-                console.log(coachdata);
-                if (coachdata) {
-                    const data = yield models_1.CoachModel.updateOne({ _id: coach }, {
+                const existingCoach = yield models_1.CoachModel.findOne({ _id: coach });
+                if (existingCoach) {
+                    const updatedCoach = yield models_1.CoachModel.updateOne({ _id: coach }, {
                         $set: {
                             trainId: detail.trainId,
                             coachNumber: detail.coachNumber,
                             no_of_seat: detail.no_of_seat,
-                        }
+                        },
                     });
-                    return response_1.Response.sendResponse("update successfully", 201, { data });
+                    return response_1.Response.sendResponse("Coach updated successfully", 201, { updatedCoach });
                 }
                 else {
-                    return response_1.Response.sendResponse("coach doesn't exist", 403, {});
+                    return response_1.Response.sendResponse("Coach doesn't exist", 403, {});
                 }
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });

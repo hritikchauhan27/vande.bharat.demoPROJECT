@@ -1,20 +1,22 @@
 import * as redis from 'redis';
 
+async function createRedisClient() {
+    const client = await redis.createClient();
+    await client.connect();
+    return client;
+}
+
 export async function maintainSession(user, device) {
     try {
-        const client = await redis.createClient();
-        try{
-            await client.connect();
-        }
-        catch(err){
-            console.log(err);
-        }
+        const client = await createRedisClient();
+        
         if (user) {
             await client.SET(user.id, JSON.stringify({
                 'user_id': user._id,
                 'device_id': device,
                 'status': true
             }));
+            
             const redisSession = await client.GET(user.id);
             console.log(redisSession);
         } else {
@@ -28,34 +30,20 @@ export async function maintainSession(user, device) {
 export async function logout_session_redis(user) {
     console.log(user.email);
     try {
-        const client = await redis.createClient();
-        try{
-            await client.connect();
-        }
-        catch(err){
-            console.log(err);
-        }
+        const client = await createRedisClient();
         console.log(user.username);
+        
         await client.del(user.email);
-        console.log("delete successfully");
-    }
-    catch (err) {
-        console.log("error in deleting", err);
+        console.log("Delete successfully");
+    } catch (err) {
+        console.log("Error in deleting", err);
     }
 }
 
-export async function get_otp(email){
-        const client = await redis.createClient();
-        try{
-            await client.connect();
-        }
-        catch(err){
-            console.log(err);
-        }
-        const otp_details = await client.get(email);
-        console.log('----',otp_details);
-        
-        const userOTP = JSON.parse(otp_details);
-        return otp_details
-    
+export async function get_otp(email) {
+    const client = await createRedisClient();
+    const otpDetails = await client.get(email);
+    console.log('----', otpDetails);
+    const userOTP = JSON.parse(otpDetails);
+    return otpDetails;
 }
