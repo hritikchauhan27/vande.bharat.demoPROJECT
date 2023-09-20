@@ -8,7 +8,7 @@ export async function generatePDF(data:any) {
     const outputFilename = `invoice-${data.bookingDate}.pdf`;
     const outputFilePath = path.join(outputPath, outputFilename);
 
-    // Create the output directory if it doesn't exist
+    // create the output directory if it doesn't exist
     if (!fs.existsSync(outputPath)) {
         fs.mkdirSync(outputPath);
     }
@@ -16,24 +16,21 @@ export async function generatePDF(data:any) {
     const doc = new pdfkit({ autoFirstPage: true });
     doc.pipe(fs.createWriteStream(outputFilePath));
 
-    // Set font size and style
     doc.fontSize(16);
     doc.font('Helvetica-Bold');
 
-    // Add title
     doc.text('Booking Receipt', { align: 'center' });
-    doc.moveDown(0.5); // Add some space
+    doc.moveDown(0.5);
 
-    // Set font size and style for the content
+    // set font size and style for the content
     doc.fontSize(12);
     doc.font('Helvetica');
 
-    // Add personalized message
     doc.text(`Hello,`);
-    doc.moveDown(0.5); // Add some space
+    doc.moveDown(0.5); 
     doc.text('Thank you for booking a ticket. Have a safe journey.');
 
-    // Add booking details
+    // add booking details
     const seatNumbers = data.seats.map((seat) => seat.seatNumber);
     doc.moveDown();
     doc.text(`User ID: ${data.userId}`);

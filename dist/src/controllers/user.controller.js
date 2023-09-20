@@ -154,6 +154,9 @@ class UserOperation {
                 if (!passwordMatch) {
                     return response_1.Response.sendResponse('Incorrect previous password', 400, {});
                 }
+                if (newPassword === previousPassword) {
+                    return response_1.Response.sendResponse('New password cannot be the same as the previous password', 400, {});
+                }
                 const saltRounds = 10;
                 const hashedPassword = yield bcrypt_1.default.hash(newPassword, saltRounds);
                 yield user_model_1.UserModel.updateOne({ email }, { $set: { password: hashedPassword } });
@@ -195,7 +198,7 @@ class UserOperation {
                         to: details.email,
                         subject: 'Password Reset Request',
                         text: `You are receiving this email because you (or someone else) has requested a password reset for your account.\n\n
-                Please click on the following link, or paste this into your browser to complete the process:\n\n
+                Please paste this into your browser to complete the process:\n\n
                 ${process.env.CLIENT_URL}/RESET PASSWORD OTP: ${OTP}\n\n
                 If you did not request this, please ignore this email and your password will remain unchanged.\n`,
                     };
