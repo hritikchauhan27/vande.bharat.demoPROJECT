@@ -3,29 +3,25 @@ import { TrainModel } from "../models";
 import { Response } from "../const/response";
 
 export class CoachOperation {
+
   static async addCoach(detail) {
     try {
       const trainId = detail.trainId;
-      console.log(trainId);
-      const [coach, train] = await Promise.all([
-        CoachModel.findOne({ coachNumber: detail.coachNumber, trainId: detail.trainId}),
+
+      const [existingCoach, train] = await Promise.all([
+        CoachModel.findOne({ coachNumber: detail.coachNumber, trainId }),
         TrainModel.findOne({ _id: trainId }),
       ]);
 
-      console.log(coach);
-      console.log(train.no_of_coaches);
-
-      if (train.no_of_coaches >= 8 || coach) {
-        return Response.sendResponse("Number of coaches should be less then 8 or coach already exist", 403, {});
-      }
-      else {
-        console.log(train.no_of_coaches);
+      if (train.no_of_coaches >= 8 || existingCoach) {
+        return Response.sendResponse("Number of coaches should be less than 8 or coach already exists", 403, {});
+      } else {
         const coachData = await CoachModel.create(detail);
-        const trainData = await TrainModel.findOneAndUpdate({ _id: trainId }, { no_of_coaches: train.no_of_coaches + 1 })
-        return Response.sendResponse("coach registered successfully", 201, { coachData, trainData });
+        const updatedTrain = await TrainModel.findOneAndUpdate({ _id: trainId }, { $inc: { no_of_coaches: 1 } });
+        return Response.sendResponse("Coach registered successfully", 201, { coachData, updatedTrain });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Response.sendResponse("Server error", 500, {});
     }
   }
@@ -33,40 +29,43 @@ export class CoachOperation {
   
   static async deleteCoach(coach) {
     try {
-      const coachdata = await CoachModel.findOne({ coachNumber: coach});
-      const trainId = coachdata.trainId;
-      console.log(trainId);
+      const coachData = await CoachModel.findOne({ coachNumber: coach });
+      const trainId = coachData.trainId;
+
       const train = await TrainModel.findOne({ _id: trainId });
-      if (coachdata) {
-        const data = await CoachModel.deleteOne({ coachNumber: coach});
-        const trainData = await TrainModel.findOneAndUpdate({ _id: trainId }, { no_of_coaches: train.no_of_coaches - 1 })
-        return Response.sendResponse("coach deleted successfully", 201, {data});
+
+      if (coachData) {
+        const deletedCoach = await CoachModel.deleteOne({ coachNumber: coach });
+        const updatedTrain = await TrainModel.findOneAndUpdate({ _id: trainId }, { $inc: { no_of_coaches: -1 } });
+        return Response.sendResponse("Coach deleted successfully", 201, { deletedCoach, updatedTrain });
       }
-      return Response.sendResponse("coach doesn't exist", 403, {})
+
+      return Response.sendResponse("Coach doesn't exist", 403, {});
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Response.sendResponse("Server error", 500, {});
     }
   }
 
   static async updateCoach(coach, detail) {
     try {
-      const coachdata = await CoachModel.findOne({_id: coach });
-      console.log(coachdata);
-      if (coachdata) {
-        const data = await CoachModel.updateOne({_id: coach},{
-          $set:{
+      const existingCoach = await CoachModel.findOne({ _id: coach });
+
+      if (existingCoach) {
+        const updatedCoach = await CoachModel.updateOne({ _id: coach }, {
+          $set: {
             trainId: detail.trainId,
             coachNumber: detail.coachNumber,
             no_of_seat: detail.no_of_seat,
-          }
+          },
         });
-        return Response.sendResponse("update successfully",201,{data});
-      }else{
-        return Response.sendResponse("coach doesn't exist",403,{});
+
+        return Response.sendResponse("Coach updated successfully", 201, { updatedCoach });
+      } else {
+        return Response.sendResponse("Coach doesn't exist", 403, {});
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Response.sendResponse("Server error", 500, {});
     }
   }

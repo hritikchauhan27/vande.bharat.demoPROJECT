@@ -3,7 +3,7 @@ import { OAuth2Client } from "google-auth-library";
 import { UserModel } from "../models";
 import jwt from 'jsonwebtoken';
 import { Sessions } from "../controllers/session.controller";
-import { maintainSession } from "../middleware/redis.middleware";
+import { maintainSession } from "../redis/redis.middleware";
 import { SessionModel } from "../models/session.model";
 
 
@@ -86,7 +86,7 @@ async function google_signup(email: string, name: string) {
             await newUser.save();
         }
 
-        const token = jwt.sign({ email, role: 'user' }, process.env.SECRET_KEY);
+        const token = jwt.sign({ email, role: 'user' }, process.env.SECRET_KEY,{ expiresIn: '10h',});
         const userSession = await SessionModel.findOne({ user_id: user._id });
         await Sessions.sessionEntry('web', user, userSession);
         await maintainSession(user, 'web');

@@ -17,7 +17,7 @@ const google_auth_library_1 = require("google-auth-library");
 const models_1 = require("../models");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const session_controller_1 = require("../controllers/session.controller");
-const redis_middleware_1 = require("../middleware/redis.middleware");
+const redis_middleware_1 = require("../redis/redis.middleware");
 const session_model_1 = require("../models/session.model");
 const oauthClient = new google_auth_library_1.OAuth2Client({
     clientId: '671214805761-lehcp6bci1ql8fba64orik2m9bkh3dkk.apps.googleusercontent.com',
@@ -92,7 +92,7 @@ function google_signup(email, name) {
                 });
                 yield newUser.save();
             }
-            const token = jsonwebtoken_1.default.sign({ email, role: 'user' }, process.env.SECRET_KEY);
+            const token = jsonwebtoken_1.default.sign({ email, role: 'user' }, process.env.SECRET_KEY, { expiresIn: '10h', });
             const userSession = yield session_model_1.SessionModel.findOne({ user_id: user._id });
             yield session_controller_1.Sessions.sessionEntry('web', user, userSession);
             yield (0, redis_middleware_1.maintainSession)(user, 'web');

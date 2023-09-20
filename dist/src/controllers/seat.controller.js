@@ -16,8 +16,12 @@ class seatOperation {
     static addSeat(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const seatdata = yield models_1.SeatModel.create(detail);
-                return response_1.Response.sendResponse("Seat register successfully", 201, { seatdata });
+                const seatdata = yield models_1.SeatModel.findOne({ coachId: detail.coachId, trainId: detail.trainId, seatNumber: detail.seatNumber });
+                if (seatdata) {
+                    return response_1.Response.sendResponse("Seat already exist", 201, {});
+                }
+                const seat = yield models_1.SeatModel.create(detail);
+                return response_1.Response.sendResponse("Seat register successfully", 201, { seat });
             }
             catch (error) {
                 console.log(error);

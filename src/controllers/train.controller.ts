@@ -1,42 +1,31 @@
 import { TrainModel, TrainRouteModel } from '../models';
 import { Response } from '../const/response';
-import { log } from 'console';
 
 export class TrainOperation {
     static async addTrain(detail) {
         try {
-            const train = await TrainModel.findOne({ trainNumber: detail.trainNumber});
-            console.log(train);
-            if (!train) {
-                const train = await TrainModel.create(detail);
-                return Response.sendResponse("train register successfully", 201, { train });
+            const existingTrain = await TrainModel.findOne({ trainNumber: detail.trainNumber });
+            if (existingTrain) {
+                return Response.sendResponse("Train already exists", 403, {});
             }
-            else {
-                return Response.sendResponse("train already exit", 403, {});
-            }
+            const newTrain = await TrainModel.create(detail);
+            return Response.sendResponse("Train registered successfully", 201, { train: newTrain });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return Response.sendResponse("Server error", 500, {});
         }
     }
 
     static async trainRoute(trainNumber) {
         try {
-            const train = await TrainModel.findOne({ trainNumber: trainNumber });
-            console.log(train);
-            if(train){
-            let routeId = train.routeId;
-            console.log(routeId);
-            const route = await TrainRouteModel.findOne({ _id: routeId });
-            console.log(route);
-
-            return Response.sendResponse("train is running on route", 201, { route });}
-            else{
-                return Response.sendResponse("train doesn't exist",403,{});
+            const train = await TrainModel.findOne({ trainNumber });
+            if (!train) {
+                return Response.sendResponse("Train doesn't exist", 403, {});
             }
-        }
-        catch (error) {
-            console.log(error);
+            const route = await TrainRouteModel.findOne({ _id: train.routeId });
+            return Response.sendResponse("Train is running on route", 201, { route });
+        } catch (error) {
+            console.error(error);
             return Response.sendResponse("Server error", 500, {});
         }
     }

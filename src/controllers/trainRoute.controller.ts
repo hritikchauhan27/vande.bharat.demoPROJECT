@@ -4,16 +4,15 @@ import { TrainRouteModel } from '../models';
 export class trainRouteOperation {
     static async addTrainRoute(detail) {
         try {
-            const route = await TrainRouteModel.findOne({ start_point: detail.start_point, end_point: detail.end_point });
-            if (!route) {
-                await TrainRouteModel.create(detail);
-                return Response.sendResponse("TrainRoute register successfully", 201, {});
+            const existingRoute = await TrainRouteModel.findOne({ start_point: detail.start_point, end_point: detail.end_point });
+            if (existingRoute) {
+                return Response.sendResponse("Route already exists", 403, {});
             }
-            else {
-                return Response.sendResponse("route already exist", 403, {});
-            }
+
+            await TrainRouteModel.create(detail);
+            return Response.sendResponse("TrainRoute registered successfully", 201, {});
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return Response.sendResponse("Server Error", 500, {});
         }
     }

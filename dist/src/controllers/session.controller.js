@@ -16,31 +16,27 @@ class Sessions {
     static sessionEntry(device, user, userSession) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (user) {
-                    if (!userSession) {
-                        const session_details = new session_model_1.SessionModel({
-                            user_id: user.id,
-                            device_id: device,
-                            status: true
-                        });
-                        const session = yield session_details.save();
-                        console.log("Session stored successfully");
-                        console.log(session);
-                    }
-                    else if (userSession) {
-                        if (!userSession.status) {
-                            yield session_model_1.SessionModel.findOneAndUpdate({ user_id: user.id }, { status: !userSession.status });
-                            console.log("Session Activate");
-                        }
-                    }
-                }
-                else {
+                if (!user) {
                     console.log("User not found");
                     return response_1.Response.sendResponse("User Not Found", 404, {});
                 }
+                if (!userSession) {
+                    const sessionDetails = new session_model_1.SessionModel({
+                        user_id: user.id,
+                        device_id: device,
+                        status: true
+                    });
+                    const session = yield sessionDetails.save();
+                    console.log("Session stored successfully");
+                    console.log(session);
+                }
+                else if (!userSession.status) {
+                    yield session_model_1.SessionModel.findOneAndUpdate({ user_id: user.id }, { status: true });
+                    console.log("Session Activate");
+                }
             }
             catch (err) {
-                console.log("Server Error", err);
+                console.error("Server Error", err);
                 return response_1.Response.sendResponse("Server Error", 500, {});
             }
         });

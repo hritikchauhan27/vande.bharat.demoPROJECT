@@ -3,7 +3,7 @@ import { SessionModel } from '../models/session.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Sessions } from './session.controller';
-import { get_otp, logout_session_redis, maintainSession } from '../middleware/redis.middleware';
+import { get_otp, logout_session_redis, maintainSession } from '../redis/redis.middleware';
 import { Auth } from '../middleware/decode';
 import { Response } from '../const/response';
 import * as redis from 'redis';
@@ -49,7 +49,7 @@ export class UserOperation {
           return Response.sendResponse("Password is incorrect", 404, {});
         }
         const forToken = { email, role: user.role };
-        const token = jwt.sign(forToken, process.env.SECRET_KEY);
+        const token = jwt.sign(forToken, process.env.SECRET_KEY, {expiresIn: '10h'});
         await Sessions.sessionEntry(device, user, userSession);
         await maintainSession(user, device);
         return Response.sendResponse("Login successfully", 201, { user, token });

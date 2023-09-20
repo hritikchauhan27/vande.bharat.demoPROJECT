@@ -16,18 +16,15 @@ class TrainOperation {
     static addTrain(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const train = yield models_1.TrainModel.findOne({ trainNumber: detail.trainNumber });
-                console.log(train);
-                if (!train) {
-                    const train = yield models_1.TrainModel.create(detail);
-                    return response_1.Response.sendResponse("train register successfully", 201, { train });
+                const existingTrain = yield models_1.TrainModel.findOne({ trainNumber: detail.trainNumber });
+                if (existingTrain) {
+                    return response_1.Response.sendResponse("Train already exists", 403, {});
                 }
-                else {
-                    return response_1.Response.sendResponse("train already exit", 403, {});
-                }
+                const newTrain = yield models_1.TrainModel.create(detail);
+                return response_1.Response.sendResponse("Train registered successfully", 201, { train: newTrain });
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });
@@ -35,21 +32,15 @@ class TrainOperation {
     static trainRoute(trainNumber) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const train = yield models_1.TrainModel.findOne({ trainNumber: trainNumber });
-                console.log(train);
-                if (train) {
-                    let routeId = train.routeId;
-                    console.log(routeId);
-                    const route = yield models_1.TrainRouteModel.findOne({ _id: routeId });
-                    console.log(route);
-                    return response_1.Response.sendResponse("train is running on route", 201, { route });
+                const train = yield models_1.TrainModel.findOne({ trainNumber });
+                if (!train) {
+                    return response_1.Response.sendResponse("Train doesn't exist", 403, {});
                 }
-                else {
-                    return response_1.Response.sendResponse("train doesn't exist", 403, {});
-                }
+                const route = yield models_1.TrainRouteModel.findOne({ _id: train.routeId });
+                return response_1.Response.sendResponse("Train is running on route", 201, { route });
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });

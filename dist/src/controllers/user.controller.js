@@ -41,7 +41,7 @@ const session_model_1 = require("../models/session.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const session_controller_1 = require("./session.controller");
-const redis_middleware_1 = require("../middleware/redis.middleware");
+const redis_middleware_1 = require("../redis/redis.middleware");
 const decode_1 = require("../middleware/decode");
 const response_1 = require("../const/response");
 const redis = __importStar(require("redis"));
@@ -83,7 +83,7 @@ class UserOperation {
                     return response_1.Response.sendResponse("Password is incorrect", 404, {});
                 }
                 const forToken = { email, role: user.role };
-                const token = jsonwebtoken_1.default.sign(forToken, process.env.SECRET_KEY);
+                const token = jsonwebtoken_1.default.sign(forToken, process.env.SECRET_KEY, { expiresIn: '10h' });
                 yield session_controller_1.Sessions.sessionEntry(device, user, userSession);
                 yield (0, redis_middleware_1.maintainSession)(user, device);
                 return response_1.Response.sendResponse("Login successfully", 201, { user, token });

@@ -16,18 +16,15 @@ class StopOperation {
     static addStop(detail) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stop = yield models_1.StopModel.findOne({ stop_name: detail.stop_name });
-                // console.log(train);
-                if (!stop) {
-                    yield models_1.StopModel.create(detail);
-                    return response_1.Response.sendResponse("Stop register successfully", 201, {});
+                const existingStop = yield models_1.StopModel.findOne({ stop_name: detail.stop_name });
+                if (existingStop) {
+                    return response_1.Response.sendResponse("Stop already exists", 403, {});
                 }
-                else {
-                    return response_1.Response.sendResponse("Stop already exit", 403, {});
-                }
+                yield models_1.StopModel.create(detail);
+                return response_1.Response.sendResponse("Stop registered successfully", 201, {});
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });
@@ -35,13 +32,14 @@ class StopOperation {
     static getStop(stop) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(stop);
                 const stopDetail = yield models_1.StopModel.findOne({ stop_name: stop });
-                console.log(stopDetail);
+                if (!stopDetail) {
+                    return response_1.Response.sendResponse("Stop doesn't exist", 403, {});
+                }
                 return response_1.Response.sendResponse("Stop detail", 201, { stopDetail });
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return response_1.Response.sendResponse("Server error", 500, {});
             }
         });
@@ -49,8 +47,8 @@ class StopOperation {
     static deleteStop(stop) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stopNme = yield models_1.StopModel.findOne({ stop_name: stop });
-                if (stopNme) {
+                const stopName = yield models_1.StopModel.findOne({ stop_name: stop });
+                if (stopName) {
                     yield models_1.StopModel.deleteOne({ stop_name: stop });
                     return response_1.Response.sendResponse("Stop delete successfully", 201, {});
                 }
