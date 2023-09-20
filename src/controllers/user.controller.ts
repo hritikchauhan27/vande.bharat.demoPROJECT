@@ -20,7 +20,7 @@ export class UserOperation {
       if (existingUser) {
         return Response.sendResponse("User already exists", 403, {});
       }
-      const userWithoutPassword = await UserModel.findOne({ username, email, role });
+      const userWithoutPassword = await UserModel.findOne({ email });
       const hashpassword = await Auth.generate_hash_pass(password);
       if (userWithoutPassword) {
         let data = await UserModel.updateOne({ email }, {

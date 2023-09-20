@@ -55,7 +55,7 @@ class UserOperation {
                 if (existingUser) {
                     return response_1.Response.sendResponse("User already exists", 403, {});
                 }
-                const userWithoutPassword = yield user_model_1.UserModel.findOne({ username, email, role });
+                const userWithoutPassword = yield user_model_1.UserModel.findOne({ email });
                 const hashpassword = yield decode_1.Auth.generate_hash_pass(password);
                 if (userWithoutPassword) {
                     let data = yield user_model_1.UserModel.updateOne({ email }, {
