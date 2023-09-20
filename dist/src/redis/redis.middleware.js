@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_otp = exports.logout_session_redis = exports.maintainSession = void 0;
+exports.del_otp = exports.get_otp = exports.logout_session_redis = exports.maintainSession = void 0;
 const redis = __importStar(require("redis"));
 function createRedisClient() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -89,4 +89,12 @@ function get_otp(email) {
     });
 }
 exports.get_otp = get_otp;
+function del_otp(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = yield createRedisClient();
+        const otpDetails = yield client.del(email);
+        return otpDetails;
+    });
+}
+exports.del_otp = del_otp;
 //# sourceMappingURL=redis.middleware.js.map

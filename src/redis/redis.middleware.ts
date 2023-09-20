@@ -47,3 +47,9 @@ export async function get_otp(email) {
     const userOTP = JSON.parse(otpDetails);
     return otpDetails;
 }
+
+export async function del_otp(email) {
+    const client = await createRedisClient();
+    const otpDetails = await client.del(email);
+    return otpDetails;
+}

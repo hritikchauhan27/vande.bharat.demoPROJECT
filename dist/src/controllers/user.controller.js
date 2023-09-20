@@ -234,7 +234,10 @@ class UserOperation {
                     const hashpassword = yield bcrypt_1.default.hash(payload.newPassword, salt);
                     user.password = hashpassword;
                     console.log(user.password);
-                    yield user.save();
+                    const updatedUser = yield user.save();
+                    if (updatedUser) {
+                        (0, redis_middleware_1.del_otp)(payload.email);
+                    }
                     return resolve(response_1.Response.sendResponse("password reset successfully", 201, {}));
                 }
                 catch (error) {

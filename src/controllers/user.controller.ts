@@ -3,7 +3,7 @@ import { SessionModel } from '../models/session.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Sessions } from './session.controller';
-import { get_otp, logout_session_redis, maintainSession } from '../redis/redis.middleware';
+import { del_otp, get_otp, logout_session_redis, maintainSession } from '../redis/redis.middleware';
 import { Auth } from '../middleware/decode';
 import { Response } from '../const/response';
 import * as redis from 'redis';
@@ -169,7 +169,7 @@ export class UserOperation {
           to: details.email,
           subject: 'Password Reset Request',
           text: `You are receiving this email because you (or someone else) has requested a password reset for your account.\n\n
-                Please click on the following link, or paste this into your browser to complete the process:\n\n
+                Please paste this into your browser to complete the process:\n\n
                 ${process.env.CLIENT_URL}/RESET PASSWORD OTP: ${OTP}\n\n
                 If you did not request this, please ignore this email and your password will remain unchanged.\n`,
         };
@@ -210,7 +210,10 @@ export class UserOperation {
         const hashpassword = await bcrypt.hash(payload.newPassword, salt);
         user.password = hashpassword
         console.log(user.password);
-        await user.save();
+        const updatedUser = await user.save();
+        if(updatedUser){
+          del_otp(payload.email);
+        }
         return resolve(Response.sendResponse("password reset successfully", 201, {}))
       }
       catch (error) {
