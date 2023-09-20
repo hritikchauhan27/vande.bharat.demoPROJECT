@@ -4,15 +4,15 @@ import natural from 'natural';
 const trainingData=[
 
     {
-        input:"hii",
-        output:"hello welcome"
+        input:"Hii",
+        output:"Hello welcome"
     },
     {
-        "input":"what is your name",
+        "input":"What is your name",
         "output":"I am Thor's Hammer chatbot, you can ask me anything about Vande Bharat Train Booking"
     },
     {
-        "input":"who are you",
+        "input":"Who are you",
         "output":"I am Thor's Hammer chatbot, you can ask me anything about Vande Bharat Train Booking"
     },
     {
