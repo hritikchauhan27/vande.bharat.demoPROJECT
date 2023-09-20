@@ -125,6 +125,9 @@ export class UserOperation {
       if (!passwordMatch) {
         return Response.sendResponse('Incorrect previous password', 400, {});
       }
+      if (newPassword === previousPassword) {
+        return Response.sendResponse('New password cannot be the same as the previous password', 400, {});
+      }
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       await UserModel.updateOne({ email }, { $set: { password: hashedPassword } });
